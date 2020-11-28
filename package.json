@@ -1,0 +1,29 @@
+{
+  "name": "code-project",
+  "version": "0.0.0",
+  "description": "A web component library and system to model computer circuitry",
+  "main": "index.html",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BlaiseGratton/code-components-project.git"
+  },
+  "keywords": [
+    "web-component",
+    "web-components"
+  ],
+  "author": "Blaise Gratton",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BlaiseGratton/code-components-project/issues"
+  },
+  "homepage": "https://github.com/BlaiseGratton/code-components-project#readme",
+  "dependencies": {
+    "jest": "^26.6.3"
+  }
+}
