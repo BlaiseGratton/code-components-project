@@ -3,11 +3,29 @@
 <head>
   <meta charset="UTF-8">
   <title></title>
+  <style>
+    component-container {
+      border: 1px solid red;
+      display: contents;
+      height: 200px;
+      width: 200px;
+    }
+    wire-segment {
+      border: 1px solid blue;
+    }
+  </style>
 </head>
 <body>
-  <section class="component-container">
-    <wire-segment x1="0" y1="0" x2="100" y2="100"></wire-segment>
-  </section>
+  <component-container>
+    <power-source></power-source>
+    <wire-segment x1="20" y1="0" x2="100" y2="100"></wire-segment>
+    <wire-segment x1="0" y1="20" x2="170" y2="130"></wire-segment>
+    <wire-segment x1="20" y1="10" x2="120" y2="120"></wire-segment>
+    <wire-segment x1="0" y1="25" x2="160" y2="180"></wire-segment>
+  </component-container>
+  <script src="./components/ComponentContainer.js"></script>
+  <script src="./components/ContactPoint.js"></script>
   <script src="./components/WireSegment.js"></script>
+  <script src="./components/PowerSource.js"></script>
 </body>
 </html>
