@@ -1,28 +1,26 @@
-// $('wire-segment').setAttribute('is-powered', 'true')
-
-
 window.customElements.define('wire-segment', class extends HTMLElement {
 
   handleConnectSegment (segment) {
-    if (!this.connectedSegments.find(seg => seg === segment)) {
+    if (!this.connectedSegments.find(seg => seg === segment))
       this.connectedSegments.push(segment)
-    }
 
-    if (!this.attributes['is-powered'] && segment.attributes['is-powered']) {
+    if (!this.attributes['is-powered'] && segment.attributes['is-powered'])
       this.setAttribute('is-powered', true)
-    }
   }
 
   handleDisconnectSegment (segment) {
     this.connectedSegments = this.connectedSegments.filter(seg => seg !== segment)
-    if (!this.connectedSegments.length || !this.connectedSegments.find(seg => seg.attributes['is-powered'])) {
+
+    if (!this.connectedSegments.length
+        || !this.connectedSegments.find(seg => seg.attributes['is-powered'])) {
       this.removeAttribute('is-powered')
     }
   }
 
   constructor () {
     super()
-    const shadowDOM = this.attachShadow({ mode: 'open' })
+    // const shadowDOM = this.attachShadow({ mode: 'open' })
+    console.log('running constructor')
     this.style.display = 'contents'
     this.style.position = 'absolute'
     this.poweringTo = []
@@ -48,7 +46,12 @@ window.customElements.define('wire-segment', class extends HTMLElement {
     }
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-    svg.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:xlink', 'http://www.w3.org/1999/xlink')
+
+    svg.setAttributeNS(
+      'http://www.w3.org/2000/xmlns/',
+      'xmlns:xlink',
+      'http://www.w3.org/1999/xlink'
+    )
 
     let {
       'x1': x1Attribute,
@@ -61,6 +64,11 @@ window.customElements.define('wire-segment', class extends HTMLElement {
     const y1 = parseInt(y1Attribute.value)
     const x2 = parseInt(x2Attribute.value)
     const y2 = parseInt(y2Attribute.value)
+
+    this.x1 = x1
+    this.y1 = y1
+    this.x2 = x2
+    this.y2 = y2
 
     const width = Math.abs(x2 - x1)
     const height = Math.abs(y2 - y1)
@@ -141,49 +149,35 @@ window.customElements.define('wire-segment', class extends HTMLElement {
     return this.parentElement.querySelector('svg')
   }
 
-  get svg () {
-    return this._svg
-  }
+  get x1 () { return this._x1 }
+  get x2 () { return this._x2 }
+  get y1 () { return this._y1 }
+  get y2 () { return this._y2 }
+  set x1 (val) { this._x1 = val }
+  set x2 (val) { this._x2 = val }
+  set y1 (val) { this._y1 = val }
+  set y2 (val) { this._y2 = val }
 
-  set svg (value) {
-    this._svg = value
-  }
+  get svg () { return this._svg }
+  set svg (value) { this._svg = value }
 
-  get line () {
-    return this.svg.querySelector('line')
-  }
+  get line () { return this.svg.querySelector('line') }
 
-  get end1 () {
-    return this.svg.querySelector('#end-1')
-  }
+  get end1 () { return this.svg.querySelector('#end-1') }
 
-  get end2 () {
-    return this.svg.querySelector('#end-2')
-  }
+  get end2 () { return this.svg.querySelector('#end-2') }
 
-  get svgWidth () {
-    return this.svg.clientWidth
-  }
+  get svgWidth () { return this.svg.clientWidth }
   
-  get svgHeight () {
-    return this.svg.clientHeight
-  }
+  get svgHeight () { return this.svg.clientHeight }
 
-  get svgViewWidth () {
-    return this.svg.attributes.viewbox.value
-  }
+  get svgViewWidth () { return this.svg.attributes.viewbox.value }
 
-  isOtherSegmentEnd (segmentCap) {
-    return this === segmentCap.parentComponent
-  }
+  isOtherSegmentEnd (segmentCap) { return this === segmentCap.parentComponent }
 
-  set svgWidth (value) {
-    this.svg.attributes.width.value = value
-  }
+  set svgWidth (value) { this.svg.attributes.width.value = value }
 
-  set svgHeight (value) {
-    this.svg.attributes.height.value = value
-  }
+  set svgHeight (value) { this.svg.attributes.height.value = value }
 
   set svgViewWidth (value) {
     let [x, y, width, height] = this.svgViewWidth.split(' ')
@@ -217,8 +211,6 @@ window.customElements.define('wire-segment', class extends HTMLElement {
     this.attributeChangeHandlers[attribute](this, ...rest)
   }
 
-  static get observedAttributes () {
-    return ['is-powered']
-  }
+  static get observedAttributes () { return ['is-powered'] }
 
 })
