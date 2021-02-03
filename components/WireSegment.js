@@ -28,6 +28,7 @@ window.customElements.define('wire-segment', class extends HTMLElement {
     this.poweringTo = []
     this.poweredBy = []
     this.connectedSegments = []
+    this.isPowered = false
 
     this.attributeChangeHandlers = {
       'is-powered': (self, thing, value, otherThing) => {
@@ -181,6 +182,10 @@ window.customElements.define('wire-segment', class extends HTMLElement {
     width = value.toString()
     this.svg.attributes.viewbox.value = [x, y, width, height].join(' ')
   }
+
+  get isPowered () { return this._isPowered }
+
+  set isPowered (val) { this._isPowered = val }
 
   isOtherSegmentEnd (segmentCap) { return this === segmentCap.parentComponent }
 

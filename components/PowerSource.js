@@ -1,9 +1,12 @@
 window.customElements.define('power-source', class extends HTMLElement {
 
-  constructor () {
-    super()
+  connectedCallback () {
     this.style.display = 'contents'
     this.style.position = 'absolute'
+  }
+
+  constructor () {
+    super()
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
 
@@ -12,9 +15,6 @@ window.customElements.define('power-source', class extends HTMLElement {
       'xmlns:xlink',
       'http://www.w3.org/1999/xlink'
     )
-    svg.setAttribute('width', this.parentSVG.attributes.width.value)
-    svg.setAttribute('height', this.parentSVG.attributes.height.value)
-    svg.setAttribute('viewbox', this.parentSVG.attributes.viewbox)
     
     const line1 = document.createElementNS('http://www.w3.org/2000/svg', 'line')
     line1.setAttribute('x1', 10)
@@ -34,12 +34,17 @@ window.customElements.define('power-source', class extends HTMLElement {
     line2.setAttribute('stroke-width', 4)
     svg.appendChild(line2)
 
-    this.parentSVG.appendChild(svg)
+    if (this.parentSVG) {
+      svg.setAttribute('width', this.parentSVG.attributes.width.value)
+      svg.setAttribute('height', this.parentSVG.attributes.height.value)
+      svg.setAttribute('viewbox', this.parentSVG.attributes.viewbox)
+      this.parentSVG.appendChild(svg)
+    }
     this.svg = svg
   }
 
   get parentSVG () {
-    return this.parentElement.querySelector('svg')
+    return this.parentElement && this.parentElement.querySelector('svg')
   }
 
   get svg () {
@@ -49,6 +54,4 @@ window.customElements.define('power-source', class extends HTMLElement {
   set svg (value) {
     this._svg = value
   }
-
-
 })

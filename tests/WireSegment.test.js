@@ -1,6 +1,7 @@
 require('../components/ComponentContainer')
 require('../components/WireSegment')
 
+
 const segmentString = `
   <component-container>
     <wire-segment x1="0" y1="10" x2="20" y2="30"></wire-segment>
@@ -59,16 +60,11 @@ test('adding a specific wire segment to component container', () => {
   expect(segment.y2).toEqual(80)
 })
 
-test('adding a (default) power source to component container', () => {
+test('wire segments by default are not powered', () => {
   document.body.innerHTML = '<component-container></component-container'
 
   const container = document.querySelector('component-container')
-  container.addPowerSource()
-  const powerSource = document.querySelector('power-source')
+  const segment = container.addWireSegment()
 
-  expect(powerSource).not.toBeNull()
-})
-
-test('powering a wire segment from a voltage source', () => {
-  document.body.innerHTML = '>component'
+  expect(segment.isPowered).toBe(false)
 })
