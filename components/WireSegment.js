@@ -17,12 +17,14 @@ window.customElements.define('wire-segment', class extends HTMLElement {
     }
   }
 
+  connectedCallback () {
+    this.style.display = 'contents'
+    this.style.position = 'absolute'
+  }
+
   constructor () {
     super()
     // const shadowDOM = this.attachShadow({ mode: 'open' })
-    console.log('running constructor')
-    this.style.display = 'contents'
-    this.style.position = 'absolute'
     this.poweringTo = []
     this.poweredBy = []
 
@@ -60,34 +62,31 @@ window.customElements.define('wire-segment', class extends HTMLElement {
       'y2': y2Attribute
     } = this.attributes
 
-    const x1 = parseInt(x1Attribute.value)
-    const y1 = parseInt(y1Attribute.value)
-    const x2 = parseInt(x2Attribute.value)
-    const y2 = parseInt(y2Attribute.value)
+    this.x1 = x1Attribute ? parseInt(x1Attribute.value) : 0
+    this.y1 = y1Attribute ? parseInt(y1Attribute.value) : 0
+    this.x2 = x2Attribute ? parseInt(x2Attribute.value) : 0
+    this.y2 = y2Attribute ? parseInt(y2Attribute.value) : 0
 
-    this.x1 = x1
-    this.y1 = y1
-    this.x2 = x2
-    this.y2 = y2
-
-    const width = Math.abs(x2 - x1)
-    const height = Math.abs(y2 - y1)
+    const width = Math.abs(this.x2 - this.x1)
+    const height = Math.abs(this.y2 - this.y1)
 
     const circleCapRadius = 4  // circular caps at ends of segments
 
     //svg.setAttribute('width', width + circleCapRadius * 2)
     //svg.setAttribute('height', height + circleCapRadius * 2)
     //svg.setAttribute('viewbox', `0 0 ${width + circleCapRadius * 2} ${height + circleCapRadius * 2}`)
-    svg.setAttribute('width', this.parentSVG.attributes.width.value)
-    svg.setAttribute('height', this.parentSVG.attributes.height.value)
-    svg.setAttribute('viewbox', this.parentSVG.attributes.viewbox)
+    if (this.parentSVG) {
+      svg.setAttribute('width', this.parentSVG.attributes.width.value)
+      svg.setAttribute('height', this.parentSVG.attributes.height.value)
+      svg.setAttribute('viewbox', this.parentSVG.attributes.viewbox)
+    }
 
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line')
     line.setAttribute('id', 'segment-line')
-    line.setAttribute('x1', x1 + circleCapRadius)
-    line.setAttribute('x2', x2 + circleCapRadius)
-    line.setAttribute('y1', y1 + circleCapRadius)
-    line.setAttribute('y2', y2 + circleCapRadius)
+    line.setAttribute('x1', this.x1 + circleCapRadius)
+    line.setAttribute('x2', this.x2 + circleCapRadius)
+    line.setAttribute('y1', this.y1 + circleCapRadius)
+    line.setAttribute('y2', this.y2 + circleCapRadius)
     line.setAttribute('stroke', 'black')
     line.setAttribute('stroke-width', 2)
     line.parentComponent = this
@@ -96,8 +95,8 @@ window.customElements.define('wire-segment', class extends HTMLElement {
     const segmentEnd1 = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
     segmentEnd1.setAttribute('id', 'end-1')
     segmentEnd1.setAttribute('class', 'segment-cap')
-    segmentEnd1.setAttribute('cx', x1 + circleCapRadius)
-    segmentEnd1.setAttribute('cy', y1 + circleCapRadius)
+    segmentEnd1.setAttribute('cx', this.x1 + circleCapRadius)
+    segmentEnd1.setAttribute('cy', this.y1 + circleCapRadius)
     segmentEnd1.setAttribute('r', circleCapRadius)
     segmentEnd1.setAttribute('fill', 'black')
     segmentEnd1.parentComponent = this
@@ -106,47 +105,49 @@ window.customElements.define('wire-segment', class extends HTMLElement {
     const segmentEnd2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
     segmentEnd2.setAttribute('id', 'end-2')
     segmentEnd2.setAttribute('class', 'segment-cap')
-    segmentEnd2.setAttribute('cx', x2 + circleCapRadius)
-    segmentEnd2.setAttribute('cy', y2 + circleCapRadius)
+    segmentEnd2.setAttribute('cx', this.x2 + circleCapRadius)
+    segmentEnd2.setAttribute('cy', this.y2 + circleCapRadius)
     segmentEnd2.setAttribute('r', circleCapRadius)
     segmentEnd2.setAttribute('fill', 'black')
     segmentEnd2.parentComponent = this
     svg.appendChild(segmentEnd2)
 
-    this.parentSVG.appendChild(svg)
-    this.svg = svg
+    if (this.parentSVG) {
+      this.parentSVG.appendChild(svg)
+      this.svg = svg
 
-    const self = this
+      const self = this
 
-    this.svg.querySelectorAll('circle').forEach(cap => {
-      cap.addEventListener('mousedown', function (ev) { self.isDraggingCircle = true })
-      cap.addEventListener('mouseup', function ({ currentTarget, clientX, clientY, ...ev }) {
-        self.isDraggingCircle = false
-        const circleCapRadius = 4
-        const offset = circleCapRadius * 2 + 2
-        const xOffset = clientX - offset
-        const yOffset = clientY - offset
-        self.parentSVG.parentElement.handleIntersections(currentTarget, xOffset, yOffset)
+      this.svg.querySelectorAll('circle').forEach(cap => {
+        cap.addEventListener('mousedown', function (ev) { self.isDraggingCircle = true })
+        cap.addEventListener('mouseup', function ({ currentTarget, clientX, clientY, ...ev }) {
+          self.isDraggingCircle = false
+          const circleCapRadius = 4
+          const offset = circleCapRadius * 2 + 2
+          const xOffset = clientX - offset
+          const yOffset = clientY - offset
+          self.parentSVG.parentElement.handleIntersections(currentTarget, xOffset, yOffset)
+        })
+        cap.addEventListener('mouseenter', function (ev) {
+          ev.currentTarget.style.fill = 'orange'
+          ev.currentTarget.attributes.r.value = 8
+        })
+        cap.addEventListener('mouseleave', function (ev) {
+          ev.currentTarget.style.fill = 'black'
+          ev.currentTarget.attributes.r.value = 4
+          self.isDraggingCircle = false
+        })
+        cap.addEventListener('mousemove', function (ev) {
+          if (self.isDraggingCircle) {
+            self.redraw(ev)
+          }
+        })
       })
-      cap.addEventListener('mouseenter', function (ev) { 
-        ev.currentTarget.style.fill = 'orange'
-        ev.currentTarget.attributes.r.value = 8
-      })
-      cap.addEventListener('mouseleave', function (ev) {
-        ev.currentTarget.style.fill = 'black'
-        ev.currentTarget.attributes.r.value = 4
-        self.isDraggingCircle = false
-      })
-      cap.addEventListener('mousemove', function (ev) { 
-        if (self.isDraggingCircle) {
-          self.redraw(ev)
-        }
-      })
-    })
+    }
   }
 
   get parentSVG () {
-    return this.parentElement.querySelector('svg')
+    return this.parentElement ? this.parentElement.querySelector('svg') : null
   }
 
   get x1 () { return this._x1 }
@@ -173,8 +174,6 @@ window.customElements.define('wire-segment', class extends HTMLElement {
 
   get svgViewWidth () { return this.svg.attributes.viewbox.value }
 
-  isOtherSegmentEnd (segmentCap) { return this === segmentCap.parentComponent }
-
   set svgWidth (value) { this.svg.attributes.width.value = value }
 
   set svgHeight (value) { this.svg.attributes.height.value = value }
@@ -184,6 +183,8 @@ window.customElements.define('wire-segment', class extends HTMLElement {
     width = value.toString()
     this.svg.attributes.viewbox.value = [x, y, width, height].join(' ')
   }
+
+  isOtherSegmentEnd (segmentCap) { return this === segmentCap.parentComponent }
 
   redraw ({ currentTarget, clientX, clientY, ...ev }) {
     const circleCapRadius = 4
@@ -212,5 +213,4 @@ window.customElements.define('wire-segment', class extends HTMLElement {
   }
 
   static get observedAttributes () { return ['is-powered'] }
-
 })

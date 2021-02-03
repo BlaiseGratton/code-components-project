@@ -1,7 +1,10 @@
+require('./WireSegment')
+
 window.customElements.define('component-container', class extends HTMLElement {
 
   constructor () {
     super()
+
     const {
       width = 200,
       height = 200
@@ -28,6 +31,16 @@ window.customElements.define('component-container', class extends HTMLElement {
 
   get svg () {
     return this.querySelector('svg')
+  }
+
+  addWireSegment ({ x1 = 0, y1 = 0, x2 = 20, y2 = 20 } = {}) {
+    const segment = document.createElement('wire-segment')
+    this.svg.appendChild(segment)
+    segment.x1 = x1
+    segment.x2 = x2
+    segment.y1 = y1
+    segment.y2 = y2
+    return segment
   }
 
   handleIntersections (movedEnd, xOffset, yOffset) {
