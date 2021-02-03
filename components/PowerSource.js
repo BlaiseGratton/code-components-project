@@ -6,7 +6,12 @@ window.customElements.define('power-source', class extends HTMLElement {
     this.style.position = 'absolute'
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-    svg.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:xlink', 'http://www.w3.org/1999/xlink')
+
+    svg.setAttributeNS(
+      'http://www.w3.org/2000/xmlns/',
+      'xmlns:xlink',
+      'http://www.w3.org/1999/xlink'
+    )
     svg.setAttribute('width', this.parentSVG.attributes.width.value)
     svg.setAttribute('height', this.parentSVG.attributes.height.value)
     svg.setAttribute('viewbox', this.parentSVG.attributes.viewbox)

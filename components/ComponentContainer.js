@@ -1,5 +1,3 @@
-require('./WireSegment')
-
 window.customElements.define('component-container', class extends HTMLElement {
 
   constructor () {
@@ -18,9 +16,12 @@ window.customElements.define('component-container', class extends HTMLElement {
       }
     `
 
-
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
-    svg.setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:xlink', 'http://www.w3.org/1999/xlink')
+    svg.setAttributeNS(
+      'http://www.w3.org/2000/xmlns/',
+      'xmlns:xlink',
+      'http://www.w3.org/1999/xlink'
+    )
     svg.setAttribute('width', width)
     svg.setAttribute('height', height)
     svg.setAttribute('viewbox', `0 0 ${width} ${height}`)
@@ -43,6 +44,12 @@ window.customElements.define('component-container', class extends HTMLElement {
     return segment
   }
 
+  addPowerSource () {
+    const powerSource = document.createElement('power-source')
+    this.svg.appendChild(powerSource)
+    return powerSource
+  }
+
   handleIntersections (movedEnd, xOffset, yOffset) {
     const svg = this.svg
     const mousePosition = svg.createSVGRect()
@@ -61,7 +68,9 @@ window.customElements.define('component-container', class extends HTMLElement {
           movedEnd.parentComponent.handleConnectSegment(cap.parentComponent)
           cap.parentComponent.handleConnectSegment(movedEnd.parentComponent)
         }
-      } else if (movedEnd.parentComponent.connectedSegments.find(seg => seg === cap.parentComponent)) {
+      } else if (
+        movedEnd.parentComponent.connectedSegments.find(seg => seg === cap.parentComponent)
+      ) {
         movedEnd.parentComponent.handleDisconnectSegment(cap.parentComponent)
         cap.parentComponent.handleDisconnectSegment(movedEnd.parentComponent)
       }

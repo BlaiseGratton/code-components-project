@@ -27,6 +27,7 @@ window.customElements.define('wire-segment', class extends HTMLElement {
     // const shadowDOM = this.attachShadow({ mode: 'open' })
     this.poweringTo = []
     this.poweredBy = []
+    this.connectedSegments = []
 
     this.attributeChangeHandlers = {
       'is-powered': (self, thing, value, otherThing) => {
@@ -72,9 +73,6 @@ window.customElements.define('wire-segment', class extends HTMLElement {
 
     const circleCapRadius = 4  // circular caps at ends of segments
 
-    //svg.setAttribute('width', width + circleCapRadius * 2)
-    //svg.setAttribute('height', height + circleCapRadius * 2)
-    //svg.setAttribute('viewbox', `0 0 ${width + circleCapRadius * 2} ${height + circleCapRadius * 2}`)
     if (this.parentSVG) {
       svg.setAttribute('width', this.parentSVG.attributes.width.value)
       svg.setAttribute('height', this.parentSVG.attributes.height.value)
