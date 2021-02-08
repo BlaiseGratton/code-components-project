@@ -1,4 +1,4 @@
-window.customElements.define('component-container', class extends HTMLElement {
+window.customElements.define('component-container', class ComponentContainer extends HTMLElement {
 
   constructor () {
     super()

@@ -1,18 +1,18 @@
-window.customElements.define('wire-segment', class extends HTMLElement {
+window.customElements.define('wire-segment', class WireSegment extends HTMLElement {
 
   handleConnectSegment (segment) {
-    if (!this.connectedSegments.find(seg => seg === segment))
-      this.connectedSegments.push(segment)
+    if (!this.connectedComponents.find(seg => seg === segment))
+      this.connectedComponents.push(segment)
 
     if (!this.attributes['is-powered'] && segment.attributes['is-powered'])
       this.setAttribute('is-powered', true)
   }
 
   handleDisconnectSegment (segment) {
-    this.connectedSegments = this.connectedSegments.filter(seg => seg !== segment)
+    this.connectedComponents = this.connectedComponents.filter(seg => seg !== segment)
 
-    if (!this.connectedSegments.length
-        || !this.connectedSegments.find(seg => seg.attributes['is-powered'])) {
+    if (!this.connectedComponents.length
+        || !this.connectedComponents.find(seg => seg.attributes['is-powered'])) {
       this.removeAttribute('is-powered')
     }
   }
@@ -27,16 +27,17 @@ window.customElements.define('wire-segment', class extends HTMLElement {
     // const shadowDOM = this.attachShadow({ mode: 'open' })
     this.poweringTo = []
     this.poweredBy = []
-    this.connectedSegments = []
+    this.connectedComponents = []
     this.isPowered = false
 
     this.attributeChangeHandlers = {
+      /*
       'is-powered': (self, thing, value, otherThing) => {
         if (value) {
           self.line.style.stroke = 'red'
           self.end1.style.stroke = 'red'
           self.end2.style.stroke = 'red'
-          self.connectedSegments.forEach(seg => {
+          self.connectedComponents.forEach(seg => {
             if (!seg.attributes['is-powered']) {
               seg.setAttribute('is-powered', true)
             }
@@ -47,6 +48,7 @@ window.customElements.define('wire-segment', class extends HTMLElement {
           self.end2.style.stroke = 'black'
         }
       }
+      */
     }
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
@@ -185,7 +187,21 @@ window.customElements.define('wire-segment', class extends HTMLElement {
 
   get isPowered () { return this._isPowered }
 
-  set isPowered (val) { this._isPowered = val }
+  set isPowered (val) {
+    if (Boolean(val) && !this._isPowered) {
+      
+    }
+
+    this._isPowered = val
+  }
+
+  connect (component) {
+    if (this.connectedComponents.includes(component)) return
+    this.connectedComponents.push(component)
+    if (component.isPowered) {
+      this.isPowered = true
+    }
+  }
 
   isOtherSegmentEnd (segmentCap) { return this === segmentCap.parentComponent }
 

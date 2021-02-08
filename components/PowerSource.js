@@ -1,4 +1,8 @@
-window.customElements.define('power-source', class extends HTMLElement {
+if (typeof require !== 'undefined') {
+  require('./WireSegment')
+}
+
+window.customElements.define('power-source', class PowerSource extends HTMLElement {
 
   connectedCallback () {
     this.style.display = 'contents'
@@ -41,6 +45,19 @@ window.customElements.define('power-source', class extends HTMLElement {
       this.parentSVG.appendChild(svg)
     }
     this.svg = svg
+  }
+
+  get isPowered () { return true }
+
+  addWireSegment ({ x2 = 20, y2 = 20 } = {}) {
+    const segment = document.createElement('wire-segment')
+    this.svg.appendChild(segment)
+    segment.x1 = 22
+    segment.x2 = x2
+    segment.y1 = 40
+    segment.y2 = y2
+    segment.connect(this)
+    return segment
   }
 
   get parentSVG () {
