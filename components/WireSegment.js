@@ -198,9 +198,17 @@ window.customElements.define('wire-segment', class WireSegment extends HTMLEleme
   connect (component) {
     if (this.connectedComponents.includes(component)) return
     this.connectedComponents.push(component)
-    if (component.isPowered) {
-      this.isPowered = true
-    }
+    this.handleConnectedComponentChange()
+  }
+
+  disconnect (component) {
+    if (!this.connectedComponents.includes(component)) return
+    this.connectedComponents = this.connectedComponents.filter(x => x !== component)
+    this.handleConnectedComponentChange()
+  }
+
+  handleConnectedComponentChange () {
+    this.isPowered = Boolean(this.connectedComponents.find(x => x.isPowered))
   }
 
   isOtherSegmentEnd (segmentCap) { return this === segmentCap.parentComponent }
