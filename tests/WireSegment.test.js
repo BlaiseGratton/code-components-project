@@ -81,9 +81,10 @@ test('connecting a wire segment to another segment', () => {
   expect(wire1.isPowered).toBe(false)
   expect(wire2.isPowered).toBe(false)
 
+  // can't set isPowered willy nilly right now, need a power source
   wire1.isPowered = true
-  expect(wire1.isPowered).toBe(true)
-  expect(wire2.isPowered).toBe(true)
+  expect(wire1.isPowered).toBe(false)
+  expect(wire2.isPowered).toBe(false)
 })
 
 test('connecting multiple segments to a power source', () => {

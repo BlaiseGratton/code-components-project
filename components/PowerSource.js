@@ -12,6 +12,7 @@ window.customElements.define('power-source', class PowerSource extends HTMLEleme
   constructor () {
     super()
     this.connectedComponents = []
+    this.poweredBy = [this]
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
 
@@ -50,7 +51,9 @@ window.customElements.define('power-source', class PowerSource extends HTMLEleme
 
   get isPowered () { return true }
 
-  set isPowered (_) { /* blank setter intentional */  }
+  get poweredBy () { return [this] }
+
+  set poweredBy (val) { /* blank setter intentional */ }
 
   addWireSegment ({ x2 = 20, y2 = 20 } = {}) {
     const segment = document.createElement('wire-segment')
