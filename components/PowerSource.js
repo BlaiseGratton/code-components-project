@@ -49,7 +49,7 @@ window.customElements.define('power-source', class PowerSource extends HTMLEleme
     this.svg = svg
   }
 
-  get isPowered () { return true }
+  get isPowered () { return Boolean(this.poweredBy.length) }
 
   get poweredBy () { return [this] }
 
@@ -78,19 +78,23 @@ window.customElements.define('power-source', class PowerSource extends HTMLEleme
     this._svg = value
   }
 
-  connect (component) {
-    if (this.connectedComponents.includes(component)) return
-    this.connectedComponents.push(component)
-    this.handleConnectedComponentChange()
-    component.connect(this)
+  connect (newComponent) {
+    if (this.connectedComponents.includes(newComponent)) return
+    this.connectedComponents.push(newComponent)
+
+    if (newComponent.isPowered) {
+      this.poweredBy = [...this.poweredBy, newComponent]
+    }
+    newComponent.connect(this)
   }
 
-  disconnect (component) {
-    if (!this.connectedComponents.includes(component)) return
-    this.connectedComponents = this.connectedComponents.filter(x => x !== component)
-    this.handleConnectedComponentChange()
-    component.disconnect(this)
-  }
+  disconnect (oldComponent) {
+    if (!this.connectedComponents.includes(oldComponent)) return
+    this.connectedComponents = this.connectedComponents.filter(x => x !== oldComponent)
 
-  handleConnectedComponentChange () { }
+    if (this.poweredBy.includes(oldComponent)) {
+      this.poweredBy = this.poweredBy.filter(com => com !== oldComponent)
+    }
+    oldComponent.disconnect(this)
+  }
 })
