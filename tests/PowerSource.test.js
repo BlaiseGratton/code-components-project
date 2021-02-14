@@ -40,3 +40,4 @@ test('disconnecting a wire segment from a voltage source', () => {
   expect(wireSegment.isPowered).toBe(true)
   expect(powerSource.isPowered).toBe(true)
 })
+

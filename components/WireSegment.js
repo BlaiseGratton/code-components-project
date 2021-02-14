@@ -1,5 +1,6 @@
 window.customElements.define('wire-segment', class WireSegment extends HTMLElement {
 
+  // these buddies are for the DOM
   handleConnectSegment (segment) {
     if (!this.connectedComponents.find(seg => seg === segment))
       this.connectedComponents.push(segment)
@@ -8,6 +9,7 @@ window.customElements.define('wire-segment', class WireSegment extends HTMLEleme
       this.setAttribute('is-powered', true)
   }
 
+  // these buddies are for the DOM
   handleDisconnectSegment (segment) {
     this.connectedComponents = this.connectedComponents.filter(seg => seg !== segment)
 
@@ -188,27 +190,34 @@ window.customElements.define('wire-segment', class WireSegment extends HTMLEleme
   get isPowered () { return this._isPowered }
 
   set isPowered (val) {
-    if (Boolean(val) && !this._isPowered) {
-      
-    }
-
+    const wasPowered = this._isPowered
     this._isPowered = val
+
+    if (Boolean(val) && !wasPowered) { // not powered becoming powered
+      this.handleIsNowPowered()
+    }
   }
 
   connect (component) {
     if (this.connectedComponents.includes(component)) return
     this.connectedComponents.push(component)
     this.handleConnectedComponentChange()
+    component.connect(this)
   }
 
   disconnect (component) {
     if (!this.connectedComponents.includes(component)) return
     this.connectedComponents = this.connectedComponents.filter(x => x !== component)
     this.handleConnectedComponentChange()
+    component.disconnect(this)
   }
 
   handleConnectedComponentChange () {
     this.isPowered = Boolean(this.connectedComponents.find(x => x.isPowered))
+  }
+
+  handleIsNowPowered () {
+    this.connectedComponents.forEach(component => component.isPowered = true)
   }
 
   isOtherSegmentEnd (segmentCap) { return this === segmentCap.parentComponent }

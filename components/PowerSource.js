@@ -11,6 +11,7 @@ window.customElements.define('power-source', class PowerSource extends HTMLEleme
 
   constructor () {
     super()
+    this.connectedComponents = []
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
 
@@ -49,6 +50,8 @@ window.customElements.define('power-source', class PowerSource extends HTMLEleme
 
   get isPowered () { return true }
 
+  set isPowered (_) { /* blank setter intentional */  }
+
   addWireSegment ({ x2 = 20, y2 = 20 } = {}) {
     const segment = document.createElement('wire-segment')
     this.svg.appendChild(segment)
@@ -71,4 +74,20 @@ window.customElements.define('power-source', class PowerSource extends HTMLEleme
   set svg (value) {
     this._svg = value
   }
+
+  connect (component) {
+    if (this.connectedComponents.includes(component)) return
+    this.connectedComponents.push(component)
+    this.handleConnectedComponentChange()
+    component.connect(this)
+  }
+
+  disconnect (component) {
+    if (!this.connectedComponents.includes(component)) return
+    this.connectedComponents = this.connectedComponents.filter(x => x !== component)
+    this.handleConnectedComponentChange()
+    component.disconnect(this)
+  }
+
+  handleConnectedComponentChange () { }
 })

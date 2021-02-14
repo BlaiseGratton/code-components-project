@@ -1,5 +1,6 @@
 require('../components/ComponentContainer')
 require('../components/WireSegment')
+require('../components/PowerSource')
 
 
 const segmentString = `
@@ -67,4 +68,46 @@ test('wire segments by default are not powered', () => {
   const segment = container.addWireSegment()
 
   expect(segment.isPowered).toBe(false)
+})
+
+test('connecting a wire segment to another segment', () => {
+  document.body.innerHTML = '<component-container></component-container'
+
+  const container = document.querySelector('component-container')
+  const wire1 = container.addWireSegment()
+  const wire2 = container.addWireSegment()
+  wire1.connect(wire2)
+ 
+  expect(wire1.isPowered).toBe(false)
+  expect(wire2.isPowered).toBe(false)
+
+  wire1.isPowered = true
+  expect(wire1.isPowered).toBe(true)
+  expect(wire2.isPowered).toBe(true)
+})
+
+test('connecting multiple segments to a power source', () => {
+  document.body.innerHTML = '<component-container></component-container'
+
+  const container = document.querySelector('component-container')
+  const wire1 = container.addWireSegment()
+  const wire2 = container.addWireSegment()
+  const wire3 = container.addWireSegment()
+  wire2.connect(wire3)
+  wire1.connect(wire2)
+
+  expect(wire1.isPowered).toBe(false)
+  expect(wire2.isPowered).toBe(false)
+  expect(wire3.isPowered).toBe(false)
+
+  const powerSource = container.addPowerSource()
+  wire1.connect(powerSource)
+  expect(wire1.isPowered).toBe(true)
+  expect(wire2.isPowered).toBe(true)
+  expect(wire3.isPowered).toBe(true)
+
+  wire1.disconnect(powerSource)
+  expect(wire1.isPowered).toBe(false)
+  expect(wire2.isPowered).toBe(false)
+  expect(wire3.isPowered).toBe(false)
 })
