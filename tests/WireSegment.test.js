@@ -35,8 +35,8 @@ test('setting segment attributes via HTMLElement', () => {
 
 test('adding a (default) wire segment to component container', () => {
   document.body.innerHTML = '<component-container></component-container'
-
   const container = document.querySelector('component-container')
+
   const seg = container.addWireSegment()
   const segment = document.querySelector('wire-segment')
 
@@ -63,8 +63,8 @@ test('adding a specific wire segment to component container', () => {
 
 test('wire segments by default are not powered', () => {
   document.body.innerHTML = '<component-container></component-container'
-
   const container = document.querySelector('component-container')
+
   const segment = container.addWireSegment()
 
   expect(segment.isPowered).toBe(false)
@@ -72,7 +72,6 @@ test('wire segments by default are not powered', () => {
 
 test('connecting a wire segment to another segment', () => {
   document.body.innerHTML = '<component-container></component-container'
-
   const container = document.querySelector('component-container')
   const wire1 = container.addWireSegment()
   const wire2 = container.addWireSegment()
@@ -89,7 +88,6 @@ test('connecting a wire segment to another segment', () => {
 
 test('connecting multiple segments to a power source', () => {
   document.body.innerHTML = '<component-container></component-container'
-
   const container = document.querySelector('component-container')
   const wire1 = container.addWireSegment()
   const wire2 = container.addWireSegment()
@@ -103,12 +101,117 @@ test('connecting multiple segments to a power source', () => {
 
   const powerSource = container.addPowerSource()
   wire1.connect(powerSource)
+  expect(powerSource.isPowered).toBe(true)
   expect(wire1.isPowered).toBe(true)
   expect(wire2.isPowered).toBe(true)
   expect(wire3.isPowered).toBe(true)
 
   wire1.disconnect(powerSource)
+  expect(powerSource.isPowered).toBe(true)
   expect(wire1.isPowered).toBe(false)
   expect(wire2.isPowered).toBe(false)
   expect(wire3.isPowered).toBe(false)
+
+  powerSource.connect(wire1)
+  expect(wire1.isPowered).toBe(true)
+  expect(wire2.isPowered).toBe(true)
+  expect(wire3.isPowered).toBe(true)
+
+  powerSource.disconnect(wire1)
+  expect(powerSource.isPowered).toBe(true)
+  expect(wire1.isPowered).toBe(false)
+  expect(wire2.isPowered).toBe(false)
+  expect(wire3.isPowered).toBe(false)
+
+  wire3.connect(powerSource)
+  expect(wire1.isPowered).toBe(true)
+  expect(wire2.isPowered).toBe(true)
+  expect(wire3.isPowered).toBe(true)
+
+  wire3.disconnect(powerSource)
+  expect(powerSource.isPowered).toBe(true)
+  expect(wire1.isPowered).toBe(false)
+  expect(wire2.isPowered).toBe(false)
+  expect(wire3.isPowered).toBe(false)
+})
+
+test('making a wire loop and connecting it to power', () => {
+  document.body.innerHTML = '<component-container></component-container'
+  const container = document.querySelector('component-container')
+  const wire1 = container.addWireSegment()
+  const wire2 = container.addWireSegment()
+  const wire3 = container.addWireSegment()
+  const wire4 = container.addWireSegment()
+  const wire5 = container.addWireSegment()
+  const wire6 = container.addWireSegment()
+  wire1.connect(wire2)
+  wire2.connect(wire3)
+  wire3.connect(wire4)
+  wire4.connect(wire5)
+  wire5.connect(wire6)
+  wire6.connect(wire3)
+  const wires = [wire1, wire2, wire3, wire4, wire5, wire6]
+  const wireIsPowered = wire => wire.isPowered
+
+  const powerSource = container.addPowerSource()
+  expect(wires.every(wireIsPowered)).toBe(false)
+
+  wire1.connect(powerSource)
+  expect(wires.every(wireIsPowered)).toBe(true)
+
+  wire1.disconnect(powerSource)
+  expect(wires.every(wireIsPowered)).toBe(false)
+
+  wire3.disconnect(wire4)
+  wire1.connect(powerSource)
+  expect(wires.every(wireIsPowered)).toBe(true)
+  wire3.connect(wire4)
+  expect(wires.every(wireIsPowered)).toBe(true)
+  wire3.disconnect(wire4)
+  expect(wires.every(wireIsPowered)).toBe(true)
+
+  wire1.disconnect(powerSource)
+  expect(wires.every(wireIsPowered)).toBe(false)
+  wire2.disconnect(wire3)
+  wire3.connect(powerSource)
+  expect([wire1, wire2].every(wireIsPowered)).toBe(false)
+  expect([wire3, wire4, wire5, wire6].every(wireIsPowered)).toBe(true)
+})
+
+test('breaking a wire loop connected to power', () => {
+  document.body.innerHTML = '<component-container></component-container'
+  const container = document.querySelector('component-container')
+  const powerSource = container.addPowerSource()
+  const wire1 = container.addWireSegment()
+  const wire2 = container.addWireSegment()
+  const wire3 = container.addWireSegment()
+  const wire4 = container.addWireSegment()
+  const wire5 = container.addWireSegment()
+  const wire6 = container.addWireSegment()
+  const wire7 = container.addWireSegment()
+  const wire8 = container.addWireSegment()
+  wire1.connect(wire2)
+  wire2.connect(wire3)
+  wire3.connect(wire4)
+  wire2.connect(wire5)
+  wire5.connect(wire6)
+  wire6.connect(wire7)
+  wire7.connect(wire8)
+  wire4.connect(wire7)
+  const wires = [wire1, wire2, wire3, wire4, wire5, wire6, wire7, wire8]
+  const wireIsPowered = wire => wire.isPowered
+  expect(wires.every(wireIsPowered)).toBe(false)
+  powerSource.connect(wire1)
+  expect(wires.every(wireIsPowered)).toBe(true)
+
+  wire5.disconnect(wire6)
+  expect(wires.every(wireIsPowered)).toBe(true)
+  wire3.disconnect(wire4)
+  expect([wire1, wire2, wire3, wire5].every(wireIsPowered)).toBe(true)
+  // expect([wire4, wire5, wire6, wire7, wire8].every(wireIsPowered)).toBe(false)
+  expect(wire4.isPowered).toBe(false)
+  expect(wire5.isPowered).toBe(false)
+  expect(wire4.isPowered).toBe(false)
+  expect(wire4.isPowered).toBe(false)
+  expect(wire4.isPowered).toBe(false)
 })
