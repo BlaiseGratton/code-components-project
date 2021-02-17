@@ -20,8 +20,17 @@ window.customElements.define('wire-segment', class WireSegment extends HTMLEleme
   }
 
   connectedCallback () {
+    if (process) { // in a jest environment so it can do equality checks
+      this.id = `wire-segment-${Math.ceil(Math.random() * 100000)}`
+    }
     this.style.display = 'contents'
     this.style.position = 'absolute'
+  }
+
+  toJSON () {
+    return {
+      type: 'wire-segment'
+    }
   }
 
   constructor () {
@@ -200,15 +209,33 @@ window.customElements.define('wire-segment', class WireSegment extends HTMLEleme
     this._poweredBy = val
 
     if (newPowerSource) {
+      // this component is becoming powered, so it checks its buddies to see if they need
+      // power like a mensch
       this.connectedComponents.filter(c => c !== newPowerSource).forEach(component => {
-        component.poweredBy = [...component.poweredBy, newPowerSource]
+        if (!component.isPowered) {
+          component.poweredBy = [...component.poweredBy, this]
+        }
       })
     }
 
     if (removedPowerSource) {
-      this.connectedComponents.filter(c => c !== removedPowerSource).forEach(component => {
-        component.poweredBy = component.poweredBy.filter(c => c !== removedPowerSource)
-      })
+      if (!this.isPowered) {
+        // this component lost its _current_ source of power, so it needs to check if any 
+        // other buddies can supply power
+        const otherComponents = this.connectedComponents.filter(c => c !== removedPowerSource)
+        const nextPoweringComponent = otherComponents.find(
+          com => com.isPowered && !com.poweredBy.includes(this)
+        )
+
+        if (nextPoweringComponent) {
+          this._poweredBy = [...this._poweredBy, nextPoweringComponent]
+        } else {
+          // if it is truly out of power, notify anyone it was also powering
+          this.connectedComponents.filter(c => c !== removedPowerSource).forEach(component => {
+            component.poweredBy = component.poweredBy.filter(c => c !== this)
+          })
+        }
+      }
     }
   }
 

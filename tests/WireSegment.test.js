@@ -105,12 +105,20 @@ test('connecting multiple segments to a power source', () => {
   expect(wire1.isPowered).toBe(true)
   expect(wire2.isPowered).toBe(true)
   expect(wire3.isPowered).toBe(true)
+  // verify poweredBy chain
+  expect(powerSource.poweredBy).toEqual([powerSource.ALWAYS_POWERED])
+  expect(wire1.poweredBy).toEqual([powerSource])
+  expect(wire2.poweredBy).toEqual([wire1])
+  expect(wire3.poweredBy).toEqual([wire2])
 
   wire1.disconnect(powerSource)
   expect(powerSource.isPowered).toBe(true)
   expect(wire1.isPowered).toBe(false)
   expect(wire2.isPowered).toBe(false)
   expect(wire3.isPowered).toBe(false)
+  expect(wire1.poweredBy).toEqual([])
+  expect(wire2.poweredBy).toEqual([])
+  expect(wire3.poweredBy).toEqual([])
 
   powerSource.connect(wire1)
   expect(wire1.isPowered).toBe(true)
@@ -127,6 +135,9 @@ test('connecting multiple segments to a power source', () => {
   expect(wire1.isPowered).toBe(true)
   expect(wire2.isPowered).toBe(true)
   expect(wire3.isPowered).toBe(true)
+  expect(wire3.poweredBy).toEqual([powerSource])
+  expect(wire2.poweredBy).toEqual([wire3])
+  expect(wire1.poweredBy).toEqual([wire2])
 
   wire3.disconnect(powerSource)
   expect(powerSource.isPowered).toBe(true)
@@ -158,6 +169,13 @@ test('making a wire loop and connecting it to power', () => {
 
   wire1.connect(powerSource)
   expect(wires.every(wireIsPowered)).toBe(true)
+  expect(wire1.poweredBy).toEqual([powerSource])
+  expect(wire2.poweredBy).toEqual([wire1])
+  expect(wire3.poweredBy).toEqual([wire2])
+  expect(wire4.poweredBy).toEqual([wire3])
+  expect(wire5.poweredBy).toEqual([wire4])
+  expect(wire6.poweredBy).toEqual([wire5])
+  expect(wire6.connectedComponents).toEqual([wire5, wire3])
 
   wire1.disconnect(powerSource)
   expect(wires.every(wireIsPowered)).toBe(false)
@@ -176,6 +194,10 @@ test('making a wire loop and connecting it to power', () => {
   wire3.connect(powerSource)
   expect([wire1, wire2].every(wireIsPowered)).toBe(false)
   expect([wire3, wire4, wire5, wire6].every(wireIsPowered)).toBe(true)
+  expect(wire3.poweredBy).toEqual([powerSource])
+  expect(wire4.poweredBy).toEqual([wire5])
+  expect(wire5.poweredBy).toEqual([wire6])
+  expect(wire6.poweredBy).toEqual([wire3])
 })
 
 test('breaking a wire loop connected to power', () => {
@@ -200,18 +222,29 @@ test('breaking a wire loop connected to power', () => {
   wire4.connect(wire7)
   const wires = [wire1, wire2, wire3, wire4, wire5, wire6, wire7, wire8]
   const wireIsPowered = wire => wire.isPowered
+
   expect(wires.every(wireIsPowered)).toBe(false)
   powerSource.connect(wire1)
   expect(wires.every(wireIsPowered)).toBe(true)
+  expect(wire1.poweredBy).toEqual([powerSource])
+  expect(wire2.poweredBy).toEqual([wire1])
+  expect(wire3.poweredBy).toEqual([wire2])
+  expect(wire4.poweredBy).toEqual([wire3])
+  expect(wire5.poweredBy).toEqual([wire6])
+  expect(wire6.poweredBy).toEqual([wire7])
+  expect(wire7.poweredBy).toEqual([wire4])
+  expect(wire8.poweredBy).toEqual([wire7])
 
+  expect(wire5.connectedComponents).toEqual([wire2, wire6])
   wire5.disconnect(wire6)
+  expect(wire5.connectedComponents).toEqual([wire2])
+  expect(wire5.isPowered).toBe(true)
+  expect(wire5.poweredBy).toEqual([wire2])
   expect(wires.every(wireIsPowered)).toBe(true)
+
   wire3.disconnect(wire4)
   expect([wire1, wire2, wire3, wire5].every(wireIsPowered)).toBe(true)
-  // expect([wire4, wire5, wire6, wire7, wire8].every(wireIsPowered)).toBe(false)
-  expect(wire4.isPowered).toBe(false)
-  expect(wire5.isPowered).toBe(false)
-  expect(wire4.isPowered).toBe(false)
-  expect(wire4.isPowered).toBe(false)
-  expect(wire4.isPowered).toBe(false)
+  expect([wire4, wire6, wire7, wire8].every(wireIsPowered)).toBe(false)
+  wire5.connect(wire6)
+  expect(wires.every(wireIsPowered)).toBe(true)
 })

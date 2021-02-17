@@ -2,17 +2,28 @@ if (typeof require !== 'undefined') {
   require('./WireSegment')
 }
 
+
 window.customElements.define('power-source', class PowerSource extends HTMLElement {
 
+  get ALWAYS_POWERED () { return { isPowered: true } }
+
   connectedCallback () {
+    if (process) { // in a jest environment so it can do equality checks
+      this.id = `power-source-${Math.ceil(Math.random() * 100000)}`
+    }
     this.style.display = 'contents'
     this.style.position = 'absolute'
+  }
+
+  toJSON () {
+    return {
+      type: 'power-source'
+    }
   }
 
   constructor () {
     super()
     this.connectedComponents = []
-    this.poweredBy = [this]
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
 
@@ -51,9 +62,9 @@ window.customElements.define('power-source', class PowerSource extends HTMLEleme
 
   get isPowered () { return Boolean(this.poweredBy.length) }
 
-  get poweredBy () { return [this] }
+  get poweredBy () { return [this.ALWAYS_POWERED] }
 
-  set poweredBy (val) { /* blank setter intentional */ }
+  set poweredBy (val) { return true /* blank setter intentional */ }
 
   addWireSegment ({ x2 = 20, y2 = 20 } = {}) {
     const segment = document.createElement('wire-segment')
