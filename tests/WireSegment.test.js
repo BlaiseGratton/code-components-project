@@ -3,11 +3,28 @@ require('../components/WireSegment')
 require('../components/PowerSource')
 
 
+// helpers
 const segmentString = `
   <component-container>
     <wire-segment x1="0" y1="10" x2="20" y2="30"></wire-segment>
   </component-container>
 `
+
+const addNSegmentsToContainer = (container, count) => {
+  const range = new Array(count)
+  range.fill(null)
+  return range.map(_ => container.addWireSegment())
+}
+
+const wireIsPowered = wire => wire.isPowered
+
+test('add segment helper function', () => {
+  document.body.innerHTML = '<component-container></component-container'
+  const container = document.querySelector('component-container')
+  const wires = addNSegmentsToContainer(container, 4)
+  expect(wires.length).toBe(4)
+  expect(wires.every(x => x.constructor.name === 'WireSegment')).toBeTruthy()
+})
 
 test('getting segment attributes in JavaScript', () => {
   document.body.innerHTML = segmentString
@@ -162,7 +179,6 @@ test('making a wire loop and connecting it to power', () => {
   wire5.connect(wire6)
   wire6.connect(wire3)
   const wires = [wire1, wire2, wire3, wire4, wire5, wire6]
-  const wireIsPowered = wire => wire.isPowered
 
   const powerSource = container.addPowerSource()
   expect(wires.every(wireIsPowered)).toBe(false)
@@ -221,7 +237,6 @@ test('breaking a wire loop connected to power', () => {
   wire7.connect(wire8)
   wire4.connect(wire7)
   const wires = [wire1, wire2, wire3, wire4, wire5, wire6, wire7, wire8]
-  const wireIsPowered = wire => wire.isPowered
 
   expect(wires.every(wireIsPowered)).toBe(false)
   powerSource.connect(wire1)
@@ -247,4 +262,41 @@ test('breaking a wire loop connected to power', () => {
   expect([wire4, wire6, wire7, wire8].every(wireIsPowered)).toBe(false)
   wire5.connect(wire6)
   expect(wires.every(wireIsPowered)).toBe(true)
+})
+
+test('powering parallel lines connected like a ladder', () => {
+  document.body.innerHTML = '<component-container></component-container'
+  const container = document.querySelector('component-container')
+  const powerSource = container.addPowerSource()
+  const [w1, w2, w3, w4, w5, w6, w7,
+         w8, w9, w10, w11, w12, w13, w14] = wires = addNSegmentsToContainer(container, 14)
+
+  /*   V _1_ _2_ _3_ _4_ _5_ _6_
+   *    |       |13     |14
+   *   7|___ ___|___ ___|___
+   *      8   9   10  11  12
+   */
+
+  w1.connect(w2)
+  w2.connect(w3)
+  w3.connect(w4)
+  w4.connect(w5)
+  w5.connect(w6)
+
+  w1.connect(w7)
+  w7.connect(w8)
+  w8.connect(w9)
+  w9.connect(w10)
+  w10.connect(w11)
+  w11.connect(w12)
+
+  w13.connect(w2)
+  w13.connect(w9)
+
+  w14.connect(w4)
+  w14.connect(w11)
+
+  expect(wires.every(wireIsPowered)).toBeFalsy()
+  powerSource.connect(w1)
+  expect(wires.every(wireIsPowered)).toBeTruthy()
 })
