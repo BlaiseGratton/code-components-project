@@ -20,8 +20,8 @@ window.customElements.define('wire-segment', class WireSegment extends HTMLEleme
   }
 
   connectedCallback () {
-    if (process) { // in a jest environment so it can do equality checks
-      this.id = `wire-segment-${Math.ceil(Math.random() * 100000)}`
+    if (process && !this.id) {
+      this.id = `wire-segment-${this.testId}`
     }
     this.style.display = 'contents'
     this.style.position = 'absolute'
@@ -33,7 +33,7 @@ window.customElements.define('wire-segment', class WireSegment extends HTMLEleme
     }
   }
 
-  constructor () {
+  constructor (testId) {
     super()
     // const shadowDOM = this.attachShadow({ mode: 'open' })
     this.poweringTo = []
@@ -195,7 +195,7 @@ window.customElements.define('wire-segment', class WireSegment extends HTMLEleme
     this.svg.attributes.viewbox.value = [x, y, width, height].join(' ')
   }
 
-  get isPowered () { return Boolean(this.poweredBy.length) }
+  get isPowered () { return Boolean(this._poweredBy.length) }
 
   get poweredBy () { return this._poweredBy || [] }
 
@@ -219,22 +219,26 @@ window.customElements.define('wire-segment', class WireSegment extends HTMLEleme
     }
 
     if (removedPowerSource) {
-      if (!this.isPowered) {
-        // this component lost its _current_ source of power, so it needs to check if any 
-        // other buddies can supply power
-        const otherComponents = this.connectedComponents.filter(c => c !== removedPowerSource)
-        const nextPoweringComponent = otherComponents.find(
-          com => com.isPowered && !com.poweredBy.includes(this)
-        )
+      this.tryGetNextPoweringComponent()
+    }
+  }
 
-        if (nextPoweringComponent) {
-          this._poweredBy = [...this._poweredBy, nextPoweringComponent]
-        } else {
-          // if it is truly out of power, notify anyone it was also powering
-          this.connectedComponents.filter(c => c !== removedPowerSource).forEach(component => {
-            component.poweredBy = component.poweredBy.filter(c => c !== this)
-          })
-        }
+  tryGetNextPoweringComponent () {
+    if (!this.isPowered) {
+      // this component lost its _current_ source of power, so it needs to check if any
+      // other buddies can supply power
+      const nextPoweringComponent =
+        this.connectedComponents
+            .filter(c => c.isPowered)
+            .find(com => !com.poweredBy.includes(this))
+
+      if (nextPoweringComponent) {
+        this._poweredBy = [...this._poweredBy, nextPoweringComponent]
+      } else {
+        // if it is truly out of power, notify anyone it was also powering
+        this.connectedComponents.forEach(component => {
+          component.poweredBy = component.poweredBy.filter(c => c !== this)
+        })
       }
     }
   }
@@ -243,9 +247,10 @@ window.customElements.define('wire-segment', class WireSegment extends HTMLEleme
     if (this.connectedComponents.includes(newComponent)) return
     this.connectedComponents.push(newComponent)
 
-    if (newComponent.isPowered) {
+    if (newComponent.isPowered && !this.isPowered) {
       this.poweredBy = [...this.poweredBy, newComponent]
     }
+
     newComponent.connect(this)
   }
 
@@ -256,7 +261,12 @@ window.customElements.define('wire-segment', class WireSegment extends HTMLEleme
     if (this.poweredBy.includes(oldComponent)) {
       this.poweredBy = this.poweredBy.filter(com => com !== oldComponent)
     }
+
     oldComponent.disconnect(this)
+
+    if (!this.isPowered) {
+      this.tryGetNextPoweringComponent()
+    }
   }
 
   isOtherSegmentEnd (segmentCap) { return this === segmentCap.parentComponent }

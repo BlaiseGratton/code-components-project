@@ -8,8 +8,8 @@ window.customElements.define('power-source', class PowerSource extends HTMLEleme
   get ALWAYS_POWERED () { return { isPowered: true } }
 
   connectedCallback () {
-    if (process) { // in a jest environment so it can do equality checks
-      this.id = `power-source-${Math.ceil(Math.random() * 100000)}`
+    if (process && !this.id) {
+      this.id = `power-source-${this.testId}`
     }
     this.style.display = 'contents'
     this.style.position = 'absolute'
@@ -21,8 +21,9 @@ window.customElements.define('power-source', class PowerSource extends HTMLEleme
     }
   }
 
-  constructor () {
+  constructor (testId) {
     super()
+    this.testId = testId
     this.connectedComponents = []
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')

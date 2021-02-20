@@ -13,7 +13,7 @@ const segmentString = `
 const addNSegmentsToContainer = (container, count) => {
   const range = new Array(count)
   range.fill(null)
-  return range.map(_ => container.addWireSegment())
+  return range.map((_, idx) => container.addWireSegment({}, idx + 1))
 }
 
 const wireIsPowered = wire => wire.isPowered
@@ -166,12 +166,7 @@ test('connecting multiple segments to a power source', () => {
 test('making a wire loop and connecting it to power', () => {
   document.body.innerHTML = '<component-container></component-container'
   const container = document.querySelector('component-container')
-  const wire1 = container.addWireSegment()
-  const wire2 = container.addWireSegment()
-  const wire3 = container.addWireSegment()
-  const wire4 = container.addWireSegment()
-  const wire5 = container.addWireSegment()
-  const wire6 = container.addWireSegment()
+  const [wire1, wire2, wire3, wire4, wire5, wire6] = addNSegmentsToContainer(container, 6)
   wire1.connect(wire2)
   wire2.connect(wire3)
   wire3.connect(wire4)
@@ -299,4 +294,42 @@ test('powering parallel lines connected like a ladder', () => {
   expect(wires.every(wireIsPowered)).toBeFalsy()
   powerSource.connect(w1)
   expect(wires.every(wireIsPowered)).toBeTruthy()
+
+  // depth first?
+  expect(w1.poweredBy).toEqual([powerSource])
+  expect(w2.poweredBy).toEqual([w1])
+  expect(w3.poweredBy).toEqual([w2])
+  expect(w4.poweredBy).toEqual([w3])
+  expect(w5.poweredBy).toEqual([w4])
+  expect(w6.poweredBy).toEqual([w5])
+  expect(w7.poweredBy).toEqual([w8])
+  expect(w8.poweredBy).toEqual([w9])
+  expect(w9.poweredBy).toEqual([w10])
+  expect(w10.poweredBy).toEqual([w11])
+  expect(w11.poweredBy).toEqual([w14])
+  expect(w12.poweredBy).toEqual([w11])
+  expect(w13.poweredBy).toEqual([w9])
+  expect(w14.poweredBy).toEqual([w4])
+
+  w9.disconnect(w13)
+  expect(wires.every(wireIsPowered)).toBeTruthy()
+  expect(w13.poweredBy).toEqual([w2])
+
+  w3.disconnect(w4)
+  // expect(wires.every(wireIsPowered)).toBeTruthy()
+  expect(w1.poweredBy).toEqual([powerSource])
+  expect(w2.poweredBy).toEqual([w1])
+  expect(w3.poweredBy).toEqual([w2])
+  expect(w13.poweredBy).toEqual([w2])
+  expect(w7.poweredBy).toEqual([w1])
+
+  expect(w8.poweredBy).toEqual([w7])
+  expect(w4.poweredBy).toEqual([])
+  expect(w5.poweredBy).toEqual([w4])
+  expect(w6.poweredBy).toEqual([w5])
+  expect(w9.poweredBy).toEqual([w10])
+  expect(w10.poweredBy).toEqual([w11])
+  expect(w11.poweredBy).toEqual([w14])
+  expect(w12.poweredBy).toEqual([w11])
+  expect(w14.poweredBy).toEqual([w4])
 })

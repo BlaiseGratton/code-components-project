@@ -34,8 +34,9 @@ window.customElements.define('component-container', class ComponentContainer ext
     return this.querySelector('svg')
   }
 
-  addWireSegment ({ x1 = 0, y1 = 0, x2 = 20, y2 = 20 } = {}) {
+  addWireSegment ({ x1 = 0, y1 = 0, x2 = 20, y2 = 20 } = {}, testId) {
     const segment = document.createElement('wire-segment')
+    segment.testId = testId
     this.svg.appendChild(segment)
     segment.x1 = x1
     segment.x2 = x2
