@@ -201,6 +201,7 @@ window.customElements.define('wire-segment', class WireSegment extends HTMLEleme
 
   set poweredBy (val) {
     const wasPowered = Boolean(this._poweredBy)
+    const wasPoweredBy = this._poweredBy
 
     this._poweredBy = val
 
@@ -214,54 +215,58 @@ window.customElements.define('wire-segment', class WireSegment extends HTMLEleme
       })
     }
 
-    this.tryGetNextPoweringComponent()
-  }
-
-  tryGetNextPoweringComponent () {
-    if (this.isPowered) return
-    // this component lost its _current_ source of power, so it needs to check if any
-    // other buddies can supply power
-    const nextPoweringComponent = this.connectedComponents
-                                      .filter(c => c.isPowered)
-                                      .find(com => com.poweredBy !== this)
-
-    if (nextPoweringComponent) {
-      this.poweredBy = nextPoweringComponent
-      this.connectedComponents.forEach(com => {
-        if (!com.isPowered) {
-          com.poweredBy = this
-        }
-      })
-    } else {
-      // if it is truly out of power, notify anyone it was also powering
+    if (!val && wasPowered) {
+      // this component lost its _current_ source of power, so it needs to notify the
+      // other buddies can supply power
       this.connectedComponents.forEach(component => {
         if (component.poweredBy === this) {
           component.poweredBy = null
         }
       })
     }
+
+    const nextPoweringComponent = this.tryGetNextPoweringComponent(wasPoweredBy)
+
+    if (!this.isPowered) {
+      this._poweredBy = nextPoweringComponent || null
+    }
+
+    if (this.isPowered) {
+      this.connectedComponents.forEach(com => {
+        if (com !== nextPoweringComponent && !com.isPowered) {
+          com.poweredBy = this
+        }
+      })
+    }
+  }
+
+  tryGetNextPoweringComponent (removedComponent) {
+    if (this.isPowered) return
+    return this.connectedComponents
+               .filter(c => c !== removedComponent && c.isPowered)
+               .find(com => com.poweredBy !== this)
   }
 
   connect (newComponent) {
     if (this.connectedComponents.includes(newComponent)) return
+
     this.connectedComponents.push(newComponent)
+    newComponent.connect(this)
 
     if (newComponent.isPowered && !this.isPowered) {
       this.poweredBy = newComponent
     }
-
-    newComponent.connect(this)
   }
 
   disconnect (oldComponent) {
     if (!this.connectedComponents.includes(oldComponent)) return
+
     this.connectedComponents = this.connectedComponents.filter(x => x !== oldComponent)
+    oldComponent.disconnect(this)
 
     if (this.poweredBy === oldComponent) {
       this.poweredBy = null
     }
-
-    oldComponent.disconnect(this)
   }
 
   isOtherSegmentEnd (segmentCap) { return this === segmentCap.parentComponent }

@@ -3,7 +3,7 @@ require('../components/PowerSource')
 
 
 test('adding a (default) power source to component container', () => {
-  document.body.innerHTML = '<component-container></component-container'
+  document.body.innerHTML = '<component-container></component-container>'
 
   const container = document.querySelector('component-container')
   const returnedComponent = container.addPowerSource()
@@ -15,7 +15,7 @@ test('adding a (default) power source to component container', () => {
 })
 
 test('powering a wire segment from a voltage source', () => {
-  document.body.innerHTML = '<component-container></component-container'
+  document.body.innerHTML = '<component-container></component-container>'
 
   const container = document.querySelector('component-container')
   const powerSource = container.addPowerSource()
@@ -26,7 +26,7 @@ test('powering a wire segment from a voltage source', () => {
 })
 
 test('disconnecting a wire segment from a voltage source', () => {
-  document.body.innerHTML = '<component-container></component-container'
+  document.body.innerHTML = '<component-container></component-container>'
 
   const container = document.querySelector('component-container')
   const powerSource = container.addPowerSource()
