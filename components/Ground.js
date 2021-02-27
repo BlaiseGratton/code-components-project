@@ -1,10 +1,10 @@
-window.customElements.define('power-source', class PowerSource extends HTMLElement {
+window.customElements.define('ground-connection', class GroundConnection extends HTMLElement {
 
-  get ALWAYS_POWERED () { return { isPowered: true } }
+  get ALWAYS_GROUNDED () { return { isGrounded: true } }
 
   connectedCallback () {
     if (process && !this.id) {
-      this.id = `power-source-${this.testId}`
+      this.id = `ground-connection${this.testId}`
     }
     this.style.display = 'contents'
     this.style.position = 'absolute'
@@ -12,7 +12,7 @@ window.customElements.define('power-source', class PowerSource extends HTMLEleme
 
   toJSON () {
     return {
-      type: 'power-source'
+      type: 'ground-connection'
     }
   }
 
@@ -38,6 +38,7 @@ window.customElements.define('power-source', class PowerSource extends HTMLEleme
     line1.setAttribute('stroke-width', 4)
     svg.appendChild(line1)
 
+    /*
     const line2 = document.createElementNS('http://www.w3.org/2000/svg', 'line')
     line2.setAttribute('x1', 22)
     line2.setAttribute('y1', 40)
@@ -46,6 +47,7 @@ window.customElements.define('power-source', class PowerSource extends HTMLEleme
     line2.setAttribute('stroke', 'black')
     line2.setAttribute('stroke-width', 4)
     svg.appendChild(line2)
+    */
 
     if (this.parentSVG) {
       svg.setAttribute('width', this.parentSVG.attributes.width.value)
@@ -56,11 +58,15 @@ window.customElements.define('power-source', class PowerSource extends HTMLEleme
     this.svg = svg
   }
 
-  get isPowered () { return Boolean(this.poweredBy) }
+  get isPowered () { return false }
 
-  get poweredBy () { return this.ALWAYS_POWERED }
+  get poweredBy () { return [] }
 
-  set poweredBy (val) { return true /* blank setter intentional */ }
+  get isGrounded () { return Boolean(this.groundedBy) }
+
+  get groundedBy () { return this.ALWAYS_GROUNDED }
+
+  set groundedBy (val) { return true /* blank setter intentional */ }
 
   addWireSegment ({ x2 = 20, y2 = 20 } = {}) {
     const segment = document.createElement('wire-segment')

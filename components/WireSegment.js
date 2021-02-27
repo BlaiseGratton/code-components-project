@@ -38,7 +38,7 @@ window.customElements.define('wire-segment', class WireSegment extends HTMLEleme
     // const shadowDOM = this.attachShadow({ mode: 'open' })
     this.connectedComponents = []
     this.poweredBy = null
-    this.poweringTo = []
+    this.groundedTo = null
 
     this.attributeChangeHandlers = {
       /*
@@ -199,10 +199,13 @@ window.customElements.define('wire-segment', class WireSegment extends HTMLEleme
 
   get poweredBy () { return this._poweredBy || null }
 
+  get isGrounded () { return Boolean(this._groundedBy) }
+
+  get groundedBy () { return this._groundedBy }
+
   set poweredBy (val) {
     const wasPowered = Boolean(this._poweredBy)
     const wasPoweredBy = this._poweredBy
-
     this._poweredBy = val
 
     if (!wasPowered && val) {
@@ -216,8 +219,7 @@ window.customElements.define('wire-segment', class WireSegment extends HTMLEleme
     }
 
     if (!val && wasPowered) {
-      // this component lost its _current_ source of power, so it needs to notify the
-      // other buddies can supply power
+      // this component lost its _current_ source of power, so it needs to notify the other buddies
       this.connectedComponents.forEach(component => {
         if (component.poweredBy === this) {
           component.poweredBy = null
@@ -240,11 +242,57 @@ window.customElements.define('wire-segment', class WireSegment extends HTMLEleme
     }
   }
 
+  set groundedBy (val) {
+    const wasGrounded = Boolean(this._groundedBy)
+    const wasGroundedBy = this._groundedBy
+    this._groundedBy = val
+
+    if (!wasGrounded && val) {
+      // this component is becoming grounded, so it checks its buddies to see if they need
+      // to be grounded like a mensch
+      this.connectedComponents.filter(c => c !== val).forEach(component => {
+        if (!component.isGrounded) {
+          component.groundedBy = this
+        }
+      })
+    }
+
+    if (!val && wasGroundedBy) {
+      // this component lost its _current_ connection to ground, so it needs to notify the other buddies
+      this.connectedComponents.forEach(component => {
+        if (component.groundedBy === this) {
+          component.groundedBy = null
+        }
+      })
+    }
+
+    const nextGroundingComponent = this.tryGetNextGroundingComponent(wasGroundedBy)
+
+    if (!this.isGrounded) {
+      this._groundedBy = nextGroundingComponent || null
+    }
+
+    if (this.isGrounded) {
+      this.connectedComponents.forEach(com => {
+        if (com !== nextGroundingComponent && !com.isGrounded) {
+          com.groundedBy = this
+        }
+      })
+    }
+  }
+
   tryGetNextPoweringComponent (removedComponent) {
     if (this.isPowered) return
     return this.connectedComponents
                .filter(c => c !== removedComponent && c.isPowered)
                .find(com => com.poweredBy !== this)
+  }
+
+  tryGetNextGroundingComponent (removedComponent) {
+    if (this.isGrounded) return
+    return this.connectedComponents
+               .filter(c => c !== removedComponent && c.isGrounded)
+               .find(com => com.groundedBy !== this)
   }
 
   connect (newComponent) {
@@ -256,6 +304,10 @@ window.customElements.define('wire-segment', class WireSegment extends HTMLEleme
     if (newComponent.isPowered && !this.isPowered) {
       this.poweredBy = newComponent
     }
+
+    if (newComponent.isGrounded && !this.isGrounded) {
+      this.groundedBy = newComponent
+    }
   }
 
   disconnect (oldComponent) {
@@ -266,6 +318,10 @@ window.customElements.define('wire-segment', class WireSegment extends HTMLEleme
 
     if (this.poweredBy === oldComponent) {
       this.poweredBy = null
+    }
+
+    if (this.groundedBy === oldComponent) {
+      this.groundedBy = null
     }
   }
 

@@ -1,5 +1,6 @@
 require('../components/ComponentContainer')
 require('../components/PowerSource')
+require('../components/WireSegment')
 
 
 test('adding a (default) power source to component container', () => {

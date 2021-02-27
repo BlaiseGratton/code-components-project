@@ -51,6 +51,12 @@ window.customElements.define('component-container', class ComponentContainer ext
     return powerSource
   }
 
+  addGround () {
+    const ground = document.createElement('ground-connection')
+    this.svg.appendChild(ground)
+    return ground
+  }
+
   handleIntersections (movedEnd, xOffset, yOffset) {
     const svg = this.svg
     const mousePosition = svg.createSVGRect()
