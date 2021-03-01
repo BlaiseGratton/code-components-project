@@ -62,6 +62,8 @@ window.customElements.define('ground-connection', class GroundConnection extends
 
   get poweredBy () { return [] }
 
+  set poweredBy (val) { return true /* blank setter intentional */ }
+
   get isGrounded () { return Boolean(this.groundedBy) }
 
   get groundedBy () { return this.ALWAYS_GROUNDED }

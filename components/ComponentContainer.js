@@ -57,6 +57,12 @@ window.customElements.define('component-container', class ComponentContainer ext
     return ground
   }
 
+  addBulb () {
+    const bulb = document.createElement('simple-bulb')
+    this.svg.appendChild(bulb)
+    return bulb
+  }
+
   handleIntersections (movedEnd, xOffset, yOffset) {
     const svg = this.svg
     const mousePosition = svg.createSVGRect()

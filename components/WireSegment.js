@@ -1,4 +1,4 @@
-window.customElements.define('wire-segment', class WireSegment extends HTMLElement {
+class WireSegment extends HTMLElement {
 
   // these buddies are for the DOM
   handleConnectSegment (segment) {
@@ -354,4 +354,8 @@ window.customElements.define('wire-segment', class WireSegment extends HTMLEleme
   }
 
   static get observedAttributes () { return ['is-powered'] }
-})
+}
+
+window.customElements.define('wire-segment', WireSegment)
+
+module.exports = { WireSegment }
