@@ -63,6 +63,12 @@ window.customElements.define('component-container', class ComponentContainer ext
     return bulb
   }
 
+  addSwitch () {
+    const swhich = document.createElement('simple-switch')
+    this.svg.appendChild(swhich)
+    return swhich
+  }
+
   handleIntersections (movedEnd, xOffset, yOffset) {
     const svg = this.svg
     const mousePosition = svg.createSVGRect()

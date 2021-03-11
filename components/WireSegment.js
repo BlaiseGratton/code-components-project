@@ -33,7 +33,7 @@ class WireSegment extends HTMLElement {
     }
   }
 
-  constructor (testId) {
+  constructor () {
     super()
     // const shadowDOM = this.attachShadow({ mode: 'open' })
     this.connectedComponents = []
