@@ -39,5 +39,7 @@ describe('opening and closing a switch', () => {
     expect(bulb.isLit).toBe(false)
     swhich.close()
     expect(bulb.isLit).toBe(true)
+    swhich.open()
+    expect(bulb.isLit).toBe(false)
   })
 })

@@ -69,6 +69,12 @@ window.customElements.define('component-container', class ComponentContainer ext
     return swhich
   }
 
+  addWireCoil () {
+    const wireCoil = document.createElement('wire-coil')
+    this.svg.appendChild(wireCoil)
+    return wireCoil
+  }
+
   handleIntersections (movedEnd, xOffset, yOffset) {
     const svg = this.svg
     const mousePosition = svg.createSVGRect()
