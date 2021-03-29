@@ -34,10 +34,14 @@ window.customElements.define('component-container', class ComponentContainer ext
     return this.querySelector('svg')
   }
 
+  attachSVGElement (element) {
+    this.svg.appendChild(element)
+  }
+
   addWireSegment ({ x1 = 0, y1 = 0, x2 = 20, y2 = 20 } = {}, testId) {
     const segment = document.createElement('wire-segment')
     segment.testId = testId
-    this.svg.appendChild(segment)
+    this.appendChild(segment)
     segment.x1 = x1
     segment.x2 = x2
     segment.y1 = y1
@@ -47,31 +51,31 @@ window.customElements.define('component-container', class ComponentContainer ext
 
   addPowerSource () {
     const powerSource = document.createElement('power-source')
-    this.svg.appendChild(powerSource)
+    this.appendChild(powerSource)
     return powerSource
   }
 
   addGround () {
     const ground = document.createElement('ground-connection')
-    this.svg.appendChild(ground)
+    this.appendChild(ground)
     return ground
   }
 
   addBulb () {
     const bulb = document.createElement('simple-bulb')
-    this.svg.appendChild(bulb)
+    this.appendChild(bulb)
     return bulb
   }
 
   addSwitch () {
     const swhich = document.createElement('simple-switch')
-    this.svg.appendChild(swhich)
+    this.appendChild(swhich)
     return swhich
   }
 
   addWireCoil () {
     const wireCoil = document.createElement('wire-coil')
-    this.svg.appendChild(wireCoil)
+    this.appendChild(wireCoil)
     return wireCoil
   }
 
