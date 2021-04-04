@@ -1,5 +1,3 @@
-let WireSegment
-
 if (typeof process !== 'undefined') {
   const module = require('../components/WireSegment')
   WireSegment = module.WireSegment

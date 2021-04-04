@@ -12,7 +12,7 @@ window.customElements.define('component-container', class ComponentContainer ext
 
     style.textContent = `
       svg {
-        border: 1px solid yellow;
+        border: 1px solid grey;
       }
     `
 
@@ -92,24 +92,13 @@ window.customElements.define('component-container', class ComponentContainer ext
 
     const segmentCaps = svg.querySelectorAll('circle.segment-cap')
 
-    segmentCaps.forEach(cap => {
+    return Array.from(segmentCaps).map(cap => {
       const otherWire = cap.parentComponent
 
       if (cap.parentComponent === movedWire) return
       if (otherWire === movedWire) return
-      const segmentsAreConnected = movedWire.connectedComponents.find(comp => comp === otherWire)
-
-      if (svg.checkIntersection(cap, mousePosition)) {
-        if (!segmentsAreConnected) {
-          movedWire.connect(otherWire)
-        }
-      } else if (
-        segmentsAreConnected &&
-        !this.capsOverlap(otherWire, movedWire.getOtherSegmentCap(movedEnd))
-      ) {
-        movedEnd.parentComponent.disconnect(cap.parentComponent)
-      }
-    })
+      return svg.checkIntersection(cap, mousePosition) ? cap : null
+    }).filter(Boolean)
   }
 
   capsOverlap (wireSegment, endToCheck) {

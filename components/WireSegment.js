@@ -74,7 +74,27 @@ class WireSegment extends HTMLElement {
           const offset = self.constructor.CIRCLE_CAP_RADIUS * 2 + self.constructor.STROKE_WIDTH
           const xOffset = clientX - offset
           const yOffset = clientY - offset
-          self.parentSVG.parentElement.handleIntersections(currentTarget, xOffset, yOffset)
+
+          const overlappingCaps = self.parentElement.handleIntersections(
+            currentTarget,
+            xOffset,
+            yOffset
+          )
+
+          const otherEndCap = self.getOtherSegmentCap(currentTarget)
+
+          self.connectedComponents.forEach(component => {
+            if (component.constructor.name === 'PowerSource') return
+
+            if (!self.parentElement.capsOverlap(component, otherEndCap))
+              self.disconnect(component)
+          })
+
+          overlappingCaps.forEach(cap => {
+            if (!self.connectedComponents.includes(cap.parentComponent)) {
+              self.connect(cap.parentComponent)
+            }
+          })
         })
 
         cap.addEventListener('mouseenter', function (ev) {
@@ -357,16 +377,14 @@ class WireSegment extends HTMLElement {
     movedEnd.attributes.cy.value = yOffset
 
     if (this.end1 === movedEnd) {
-      this.line.attributes.x1.value = movedEnd.attributes.cx.value
-      this.line.attributes.y1.value = movedEnd.attributes.cy.value
+      this.x1 = +movedEnd.attributes.cx.value
+      this.y1 = +movedEnd.attributes.cy.value
     }
 
     if (this.end2 === movedEnd) {
-      this.line.attributes.x2.value = movedEnd.attributes.cx.value
-      this.line.attributes.y2.value = movedEnd.attributes.cy.value
+      this.x2 = +movedEnd.attributes.cx.value
+      this.y2 = +movedEnd.attributes.cy.value
     }
-
-    // this.parentSVG.parentElement.handleIntersections(movedEnd, xOffset, yOffset)
   }
 
   attributeChangedCallback (attribute, ...rest) {
