@@ -80,29 +80,49 @@ window.customElements.define('component-container', class ComponentContainer ext
   }
 
   handleIntersections (movedEnd, xOffset, yOffset) {
+    const movedWire = movedEnd.parentComponent
+    const circleCapRadius = movedWire.constructor.CIRCLE_CAP_RADIUS
+    const strokeWidth = movedWire.constructor.STROKE_WIDTH
     const svg = this.svg
     const mousePosition = svg.createSVGRect()
-    mousePosition.x = xOffset - 5 
-    mousePosition.y = yOffset - 5
-    mousePosition.width = 10
-    mousePosition.height = 10
+    mousePosition.x = xOffset - circleCapRadius - (strokeWidth / 2)
+    mousePosition.y = yOffset - circleCapRadius - (strokeWidth / 2)
+    mousePosition.width = circleCapRadius * 2 + strokeWidth
+    mousePosition.height = circleCapRadius * 2 + strokeWidth
 
     const segmentCaps = svg.querySelectorAll('circle.segment-cap')
 
     segmentCaps.forEach(cap => {
-      if (cap === movedEnd || cap.parentComponent.isOtherSegmentEnd(movedEnd)) return
+      const otherWire = cap.parentComponent
+
+      if (cap.parentComponent === movedWire) return
+      if (otherWire === movedWire) return
+      const segmentsAreConnected = movedWire.connectedComponents.find(comp => comp === otherWire)
 
       if (svg.checkIntersection(cap, mousePosition)) {
-        if (!movedEnd.parentComponent.connectedSegments.find(seg => seg === cap.parentComponent)) {
-          movedEnd.parentComponent.handleConnectSegment(cap.parentComponent)
-          cap.parentComponent.handleConnectSegment(movedEnd.parentComponent)
+        if (!segmentsAreConnected) {
+          movedWire.connect(otherWire)
         }
       } else if (
-        movedEnd.parentComponent.connectedSegments.find(seg => seg === cap.parentComponent)
+        segmentsAreConnected &&
+        !this.capsOverlap(otherWire, movedWire.getOtherSegmentCap(movedEnd))
       ) {
-        movedEnd.parentComponent.handleDisconnectSegment(cap.parentComponent)
-        cap.parentComponent.handleDisconnectSegment(movedEnd.parentComponent)
+        movedEnd.parentComponent.disconnect(cap.parentComponent)
       }
     })
+  }
+
+  capsOverlap (wireSegment, endToCheck) {
+    const svg = this.svg
+    const capRectangle = svg.createSVGRect()
+    capRectangle.x = endToCheck.cx.baseVal.value - endToCheck.r.baseVal.value
+    capRectangle.y = endToCheck.cy.baseVal.value - endToCheck.r.baseVal.value
+    capRectangle.width = endToCheck.r.baseVal.value * 2
+    capRectangle.height = endToCheck.r.baseVal.value * 2
+
+    return (
+      svg.checkIntersection(wireSegment.end1, capRectangle) ||
+      svg.checkIntersection(wireSegment.end2, capRectangle)
+    )
   }
 })

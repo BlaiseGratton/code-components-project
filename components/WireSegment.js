@@ -3,6 +3,7 @@ class WireSegment extends HTMLElement {
   static CIRCLE_CAP_RADIUS = 4  // circular caps at ends of segments
   static STROKE_WIDTH = 2  // wire thickness
   static ENDCAP_OFFSET = this.CIRCLE_CAP_RADIUS * 2 + this.STROKE_WIDTH
+  static testIdCounter = 0
 
   attachToContainer (container) {
     container.attachSVGElement(this.line)
@@ -33,7 +34,6 @@ class WireSegment extends HTMLElement {
     const height = Math.abs(this.y2 - this.y1)
 
     const line = document.createElementNS('http://www.w3.org/2000/svg', 'line')
-    line.setAttribute('id', 'segment-line')
     line.setAttribute('x1', this.x1 + this.constructor.CIRCLE_CAP_RADIUS)
     line.setAttribute('x2', this.x2 + this.constructor.CIRCLE_CAP_RADIUS)
     line.setAttribute('y1', this.y1 + this.constructor.CIRCLE_CAP_RADIUS)
@@ -44,7 +44,6 @@ class WireSegment extends HTMLElement {
     this._line = line
 
     const segmentEnd1 = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
-    segmentEnd1.setAttribute('id', 'end-1')
     segmentEnd1.setAttribute('class', 'segment-cap')
     segmentEnd1.setAttribute('cx', this.x1 + this.constructor.CIRCLE_CAP_RADIUS)
     segmentEnd1.setAttribute('cy', this.y1 + this.constructor.CIRCLE_CAP_RADIUS)
@@ -54,7 +53,6 @@ class WireSegment extends HTMLElement {
     this._end1 = segmentEnd1
 
     const segmentEnd2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
-    segmentEnd2.setAttribute('id', 'end-2')
     segmentEnd2.setAttribute('class', 'segment-cap')
     segmentEnd2.setAttribute('cx', this.x2 + this.constructor.CIRCLE_CAP_RADIUS)
     segmentEnd2.setAttribute('cy', this.y2 + this.constructor.CIRCLE_CAP_RADIUS)
@@ -70,22 +68,26 @@ class WireSegment extends HTMLElement {
 
       ;[this.end1, this.end2].forEach(cap => {
         cap.addEventListener('mousedown', function (ev) { self.isDraggingCircle = true })
+
         cap.addEventListener('mouseup', function ({ currentTarget, clientX, clientY, ...ev }) {
           self.isDraggingCircle = false
-          const offset = this.constructor.CIRCLE_CAP_RADIUS * 2 + 2
+          const offset = self.constructor.CIRCLE_CAP_RADIUS * 2 + self.constructor.STROKE_WIDTH
           const xOffset = clientX - offset
           const yOffset = clientY - offset
           self.parentSVG.parentElement.handleIntersections(currentTarget, xOffset, yOffset)
         })
+
         cap.addEventListener('mouseenter', function (ev) {
           ev.currentTarget.style.fill = 'orange'
           ev.currentTarget.attributes.r.value = 8
         })
+
         cap.addEventListener('mouseleave', function (ev) {
           ev.currentTarget.style.fill = 'black'
           ev.currentTarget.attributes.r.value = 4
           self.isDraggingCircle = false
         })
+
         cap.addEventListener('mousemove', function (ev) {
           if (self.isDraggingCircle) {
             self.redraw(ev)
@@ -107,6 +109,7 @@ class WireSegment extends HTMLElement {
     this.connectedComponents = []
     this.poweredBy = null
     this.groundedTo = null
+    this.testId = this.constructor.testIdCounter++
 
     this.attributeChangeHandlers = {
       /*
@@ -299,8 +302,16 @@ class WireSegment extends HTMLElement {
     this.connectedComponents.push(newComponent)
     newComponent.connect(this)
 
+    if (this.isPowered && !newComponent.isPowered) {
+      newComponent.poweredBy = this
+    }
+
     if (newComponent.isPowered && !this.isPowered) {
       this.poweredBy = newComponent
+    }
+
+    if (this.isGrounded && !newComponent.isGrounded) {
+      newComponent.groundedBy = this
     }
 
     if (newComponent.isGrounded && !this.isGrounded) {
@@ -321,6 +332,11 @@ class WireSegment extends HTMLElement {
     if (this.groundedBy === oldComponent) {
       this.groundedBy = null
     }
+  }
+
+  getOtherSegmentCap (end) {
+    if (end === this.end1) return this.end2
+    if (end === this.end2) return this.end1
   }
 
   handleFlowChange () {
