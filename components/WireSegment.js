@@ -84,7 +84,8 @@ class WireSegment extends HTMLElement {
           const otherEndCap = self.getOtherSegmentCap(currentTarget)
 
           self.connectedComponents.forEach(component => {
-            if (component.constructor.name === 'PowerSource') return
+            const className = component.constructor.name
+            if (className === 'PowerSource' || className === 'GroundConnection') return
 
             if (!self.parentElement.capsOverlap(component, otherEndCap))
               self.disconnect(component)

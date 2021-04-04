@@ -8,18 +8,6 @@ window.customElements.define('power-source', class PowerSource extends HTMLEleme
     }
     this.style.display = 'contents'
     this.style.position = 'absolute'
-  }
-
-  toJSON () {
-    return {
-      type: 'power-source'
-    }
-  }
-
-  constructor (testId) {
-    super()
-    this.testId = testId
-    this.connectedComponents = []
 
     const line1 = document.createElementNS('http://www.w3.org/2000/svg', 'line')
     line1.setAttribute('x1', 10)
@@ -41,6 +29,18 @@ window.customElements.define('power-source', class PowerSource extends HTMLEleme
       this.parentElement.attachSVGElement(line1)
       this.parentElement.attachSVGElement(line2)
     }
+  }
+
+  toJSON () {
+    return {
+      type: 'power-source'
+    }
+  }
+
+  constructor (testId) {
+    super()
+    this.testId = testId
+    this.connectedComponents = []
   }
 
   get isPowered () { return Boolean(this.poweredBy) }
