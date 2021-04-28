@@ -40,6 +40,8 @@ window.customElements.define('ground-connection', class GroundConnection extends
       this.parentElement.attachSVGElement(line2)
       this.parentElement.attachSVGElement(line3)
     }
+
+    this.addWireSegment()
   }
 
   addWireSegment ({ x2 = 120, y2 = 100 } = {}) {

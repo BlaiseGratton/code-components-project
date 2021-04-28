@@ -29,6 +29,8 @@ window.customElements.define('power-source', class PowerSource extends HTMLEleme
       this.parentElement.attachSVGElement(line1)
       this.parentElement.attachSVGElement(line2)
     }
+
+    this.addWireSegment()
   }
 
   toJSON () {

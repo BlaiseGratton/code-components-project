@@ -34,8 +34,12 @@ window.customElements.define('component-container', class ComponentContainer ext
     return this.querySelector('svg')
   }
 
-  attachSVGElement (element) {
-    this.svg.appendChild(element)
+  attachSVGElement (...elements) {
+    elements.forEach(element => this.svg.appendChild(element))
+  }
+
+  removeSVGElement (...elements) {
+    elements.forEach(element => this.svg.removeChild(element))
   }
 
   addWireSegment ({ x1 = 0, y1 = 0, x2 = 20, y2 = 20 } = {}, testId) {
