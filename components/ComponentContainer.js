@@ -84,6 +84,7 @@ window.customElements.define('component-container', class ComponentContainer ext
   }
 
   handleIntersections (movedEnd, xOffset, yOffset) {
+    if (!this.svg.createSVGRect) return []
     const movedWire = movedEnd.parentComponent
     const circleCapRadius = movedWire.constructor.CIRCLE_CAP_RADIUS
     const strokeWidth = movedWire.constructor.STROKE_WIDTH
@@ -93,6 +94,15 @@ window.customElements.define('component-container', class ComponentContainer ext
     mousePosition.y = yOffset - circleCapRadius - (strokeWidth / 2)
     mousePosition.width = circleCapRadius * 2 + strokeWidth
     mousePosition.height = circleCapRadius * 2 + strokeWidth
+
+    if (false) { // for visually debugging overlap checks
+      const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
+      rect.setAttribute('x', mousePosition.x)
+      rect.setAttribute('y', mousePosition.y)
+      rect.setAttribute('width', mousePosition.width)
+      rect.setAttribute('height', mousePosition.height)
+      svg.appendChild(rect)
+    }
 
     const segmentCaps = svg.querySelectorAll('circle.segment-cap')
 
@@ -108,14 +118,35 @@ window.customElements.define('component-container', class ComponentContainer ext
   capsOverlap (wireSegment, endToCheck) {
     const svg = this.svg
     const capRectangle = svg.createSVGRect()
-    capRectangle.x = endToCheck.cx.baseVal.value - endToCheck.r.baseVal.value
-    capRectangle.y = endToCheck.cy.baseVal.value - endToCheck.r.baseVal.value
-    capRectangle.width = endToCheck.r.baseVal.value * 2
-    capRectangle.height = endToCheck.r.baseVal.value * 2
 
-    return (
+    if (typeof process === 'undefined') {
+      capRectangle.x = endToCheck.cx.baseVal.value - endToCheck.r.baseVal.value
+      capRectangle.y = endToCheck.cy.baseVal.value - endToCheck.r.baseVal.value
+      capRectangle.width = endToCheck.r.baseVal.value * 2
+      capRectangle.height = endToCheck.r.baseVal.value * 2
+    } else {
+      // this is for testing purposes and works hand in hand with
+      // the mockCheckIntersection override
+      let x, y
+      if (endToCheck === endToCheck.parentComponent.end1) {
+        x = endToCheck.parentComponent.x1
+        y = endToCheck.parentComponent.y1
+      }
+      if (endToCheck === endToCheck.parentComponent.end2) {
+        x = endToCheck.parentComponent.x2
+        y = endToCheck.parentComponent.y2
+      }
+      capRectangle.x = x
+      capRectangle.y = y
+      capRectangle.width = 8
+      capRectangle.height = 8
+    }
+
+    const isOverlap = (
       svg.checkIntersection(wireSegment.end1, capRectangle) ||
       svg.checkIntersection(wireSegment.end2, capRectangle)
     )
+
+    return isOverlap
   }
 })

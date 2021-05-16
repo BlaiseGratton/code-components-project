@@ -74,28 +74,7 @@ class WireSegment extends HTMLElement {
           const offset = self.constructor.CIRCLE_CAP_RADIUS * 2 + self.constructor.STROKE_WIDTH
           const xOffset = clientX - offset
           const yOffset = clientY - offset
-
-          const overlappingCaps = self.parentElement.handleIntersections(
-            currentTarget,
-            xOffset,
-            yOffset
-          )
-
-          const otherEndCap = self.getOtherSegmentCap(currentTarget)
-
-          self.connectedComponents.forEach(component => {
-            const className = component.constructor.name
-            if (className === 'PowerSource' || className === 'GroundConnection') return
-
-            if (!self.parentElement.capsOverlap(component, otherEndCap))
-              self.disconnect(component)
-          })
-
-          overlappingCaps.forEach(cap => {
-            if (!self.connectedComponents.includes(cap.parentComponent)) {
-              self.connect(cap.parentComponent)
-            }
-          })
+          self.checkForOverlappingComponents(currentTarget, xOffset, yOffset)
         })
 
         cap.addEventListener('mouseenter', function (ev) {
@@ -114,9 +93,54 @@ class WireSegment extends HTMLElement {
             self.redraw(ev)
           }
         })
+
+        if (cap.cx) {
+          self.checkForOverlappingComponents(
+            cap,
+            cap.cx.baseVal.value,
+            cap.cy.baseVal.value
+          )
+        } else if (typeof process !== 'undefined') {
+          if (cap === this.end1) {
+            self.checkForOverlappingComponents(
+              cap,
+              this.x1,
+              this.y1
+            )
+          }
+          if (cap === this.end2) {
+            self.checkForOverlappingComponents(
+              cap,
+              this.x2,
+              this.y2
+            )
+
+          }
+        }
       })
+
     }
   }
+
+  checkForOverlappingComponents (capElement, xPos, yPos) {
+    const overlappingCaps = this.parentElement.handleIntersections(capElement, xPos, yPos)
+    const otherEndCap = this.getOtherSegmentCap(capElement)
+
+    this.connectedComponents.forEach(component => {
+      const className = component.constructor.name
+      if (className === 'PowerSource' || className === 'GroundConnection') return
+
+      if (!this.parentElement.capsOverlap(component, otherEndCap))
+        this.disconnect(component)
+    })
+
+    overlappingCaps.forEach(cap => {
+      if (!this.connectedComponents.includes(cap.parentComponent)) {
+        this.connect(cap.parentComponent)
+      }
+    })
+  }
+
 
   toJSON () {
     return {
@@ -173,6 +197,22 @@ class WireSegment extends HTMLElement {
       this.line.attributes.x1.value = val
       this.end1.attributes.cx.value = val
     }
+
+    if (!this.isDraggingCircle) {
+      if (this.end1 && this.end1.cx) {
+        this.checkForOverlappingComponents(
+          this.end1,
+          this.end1.cx.baseVal.value,
+          this.end1.cy.baseVal.value
+        )
+      } else if (this.end1) {
+        this.checkForOverlappingComponents(
+          this.end1,
+          this.x1,
+          this.y1
+        )
+      }
+    }
   }
 
   set x2 (val) {
@@ -182,6 +222,22 @@ class WireSegment extends HTMLElement {
     if (this.line) {
       this.line.attributes.x2.value = val
       this.end2.attributes.cx.value = val
+    }
+
+    if (!this.isDraggingCircle) {
+      if (this.end2 && this.end2.cx) {
+        this.checkForOverlappingComponents(
+          this.end2,
+          this.end2.cx.baseVal.value,
+          this.end2.cy.baseVal.value
+        )
+      } else if (this.end2) {
+        this.checkForOverlappingComponents(
+          this.end2,
+          this.x2,
+          this.y2
+        )
+      }
     }
   }
 
@@ -193,6 +249,22 @@ class WireSegment extends HTMLElement {
       this.line.attributes.y1.value = val
       this.end1.attributes.cy.value = val
     }
+
+    if (!this.isDraggingCircle) {
+      if (this.end1 && this.end1.cx) {
+        this.checkForOverlappingComponents(
+          this.end1,
+          this.end1.cx.baseVal.value,
+          this.end1.cy.baseVal.value
+        )
+      } else if (this.end1) {
+        this.checkForOverlappingComponents(
+          this.end1,
+          this.x1,
+          this.y1
+        )
+      }
+    }
   }
 
   set y2 (val) {
@@ -202,6 +274,22 @@ class WireSegment extends HTMLElement {
     if (this.line) {
       this.line.attributes.y2.value = val
       this.end2.attributes.cy.value = val
+    }
+
+    if (!this.isDraggingCircle) {
+      if (this.end2 && this.end2.cx) {
+        this.checkForOverlappingComponents(
+          this.end2,
+          this.end2.cx.baseVal.value,
+          this.end2.cy.baseVal.value
+        )
+      } else if (this.end2) {
+        this.checkForOverlappingComponents(
+          this.end2,
+          this.x2,
+          this.y2
+        )
+      }
     }
   }
 
