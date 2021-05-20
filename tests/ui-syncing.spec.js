@@ -131,3 +131,10 @@ describe('loading a positionally aligned circuit', () => {
     expect(bulb.isPowered).toBeFalsy()
   })
 })
+
+describe('loading a switch component', () => {
+
+  it('renders in an open state', () => {
+
+  })
+})
