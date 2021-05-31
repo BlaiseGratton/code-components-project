@@ -5,8 +5,10 @@ window.customElements.define('component-container', class ComponentContainer ext
 
     const {
       width = 200,
-      height = 200
+      height = 200,
     } = this.attributes
+
+    this.noUI = Boolean(this.attributes['no-ui']) // for skipping checking SVG overlaps
 
     const style = document.createElement('style')
 
@@ -141,6 +143,8 @@ window.customElements.define('component-container', class ComponentContainer ext
       capRectangle.width = 8
       capRectangle.height = 8
     }
+
+    if (!(wireSegment.end1 || wireSegment.end2)) return false
 
     const isOverlap = (
       svg.checkIntersection(wireSegment.end1, capRectangle) ||
