@@ -13,11 +13,13 @@ window.customElements.define('simple-switch', class SimpleSwitch extends WireSeg
     //this.switchWire = document.createElement('wire-segment')
     this.wire1 = document.createElement('wire-segment')
     this.wire2 = document.createElement('wire-segment')
-    //this.switchWire.connect(this.wire1, true)
-    this.connect(this.wire1, true)
+    this.wire1.parentComponent = this
+    this.wire2.parentComponent = this
 
     this.parentElement.appendChild(this.wire1)
     this.parentElement.appendChild(this.wire2)
+    //this.switchWire.connect(this.wire1, true)
+    this.connect(this.wire1)
 
     this.wire1.x2 = this.x1
     this.wire1.y2 = this.y1
@@ -26,8 +28,11 @@ window.customElements.define('simple-switch', class SimpleSwitch extends WireSeg
 
     this.wire2.x1 = this.x2
     this.wire2.y1 = this.y2
-    this.wire1.x2 = this.x2 + 30
-    this.wire1.y2 = this.y2
+    this.wire2.x2 = this.x2 + 30
+    this.wire2.y2 = this.y2
+
+    this.x2 -= 20
+    this.y2 -= 20
 
     if (this.isClosed) {
       this.connect(this.wire2)
@@ -36,22 +41,36 @@ window.customElements.define('simple-switch', class SimpleSwitch extends WireSeg
 
   constructor (isClosed) {
     super()
-    this.isClosed = isClosed
+    this.isClosed = Boolean(isClosed)
   }
 
+  get isOpen () { return !this.isClosed }
+
   open () {
-    this.disconnect(this.wire2)
-    this.isClosed = false
+    if (!this.isOpen) {
+      this.disconnect(this.wire2)
+      this.isClosed = false
+      this.x2 -= 20
+      this.y2 -= 20
+    }
   }
 
   close () {
-    this.connect(this.wire2)
-    this.isClosed = true
+    if (this.isOpen) {
+      this.connect(this.wire2)
+      this.isClosed = true
+      this.x2 = this.wire2.x1
+      this.y2 = this.wire2.y1
+    }
   }
 
-  connect () {
-    throw new Error(
-      '[Switch.js] - cannot connect directly to this component - connect to a contact point'
-    )
+  connect (component) {
+    if (component.parentComponent !== this) {
+      throw new Error(
+        '[Switch.js] - cannot connect directly to this component - connect to a contact point'
+      )
+    } else {
+      super.connect(component)
+    }
   }
 })

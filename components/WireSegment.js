@@ -43,30 +43,34 @@ class WireSegment extends HTMLElement {
     line.parentComponent = this
     this._line = line
 
-    const segmentEnd1 = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
-    segmentEnd1.setAttribute('class', 'segment-cap')
-    segmentEnd1.setAttribute('cx', this.x1 + this.constructor.CIRCLE_CAP_RADIUS)
-    segmentEnd1.setAttribute('cy', this.y1 + this.constructor.CIRCLE_CAP_RADIUS)
-    segmentEnd1.setAttribute('r', this.constructor.CIRCLE_CAP_RADIUS)
-    segmentEnd1.setAttribute('fill', 'black')
-    segmentEnd1.parentComponent = this
-    this._end1 = segmentEnd1
+    if (!(this.constructor.name === 'SimpleSwitch')) {
+      const segmentEnd1 = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+      segmentEnd1.setAttribute('class', 'segment-cap')
+      segmentEnd1.setAttribute('cx', this.x1 + this.constructor.CIRCLE_CAP_RADIUS)
+      segmentEnd1.setAttribute('cy', this.y1 + this.constructor.CIRCLE_CAP_RADIUS)
+      segmentEnd1.setAttribute('r', this.constructor.CIRCLE_CAP_RADIUS)
+      segmentEnd1.setAttribute('fill', 'black')
+      segmentEnd1.parentComponent = this
+      this._end1 = segmentEnd1
 
-    const segmentEnd2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
-    segmentEnd2.setAttribute('class', 'segment-cap')
-    segmentEnd2.setAttribute('cx', this.x2 + this.constructor.CIRCLE_CAP_RADIUS)
-    segmentEnd2.setAttribute('cy', this.y2 + this.constructor.CIRCLE_CAP_RADIUS)
-    segmentEnd2.setAttribute('r', this.constructor.CIRCLE_CAP_RADIUS)
-    segmentEnd2.setAttribute('fill', 'black')
-    segmentEnd2.parentComponent = this
-    this._end2 = segmentEnd2
+      const segmentEnd2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+      segmentEnd2.setAttribute('class', 'segment-cap')
+      segmentEnd2.setAttribute('cx', this.x2 + this.constructor.CIRCLE_CAP_RADIUS)
+      segmentEnd2.setAttribute('cy', this.y2 + this.constructor.CIRCLE_CAP_RADIUS)
+      segmentEnd2.setAttribute('r', this.constructor.CIRCLE_CAP_RADIUS)
+      segmentEnd2.setAttribute('fill', 'black')
+      segmentEnd2.parentComponent = this
+      this._end2 = segmentEnd2
+    }
 
     if (this.parentElement && this.parentSVG) {
       this.attachToContainer(this.parentElement)
 
       const self = this
 
-      ;[this.end1, this.end2].forEach(cap => {
+      const endCaps = [this.end1, this.end2]
+
+      endCaps.filter(Boolean).forEach(cap => {
         cap.addEventListener('mousedown', function (ev) { self.isDraggingCircle = true })
 
         cap.addEventListener('mouseup', function ({ currentTarget, clientX, clientY, ...ev }) {
@@ -130,13 +134,20 @@ class WireSegment extends HTMLElement {
       const className = component.constructor.name
       if (className === 'PowerSource' || className === 'GroundConnection') return
 
-      if (!this.parentElement.capsOverlap(component, otherEndCap) && !this.parentElement.noUI)
-        this.disconnect(component)
+      if (!this.parentElement.capsOverlap(component, otherEndCap) && !this.parentElement.noUI) {
+
+        !(this.parentComponent === component) && this.disconnect(component)
+      }
     })
 
     overlappingCaps.forEach(cap => {
       if (!this.connectedComponents.includes(cap.parentComponent)) {
-        this.connect(cap.parentComponent)
+        try {
+          this.connect(cap.parentComponent)
+        } catch (e) {
+          console.log(cap.parentComponent.constructor.name)
+          console.log(this.constructor.name)
+        }
       }
     })
   }
@@ -193,10 +204,8 @@ class WireSegment extends HTMLElement {
     this._x1 = val
     this.setAttribute('x1', val)
 
-    if (this.line) {
-      this.line.attributes.x1.value = val
-      this.end1.attributes.cx.value = val
-    }
+    if (this.line) this.line.attributes.x1.value = val
+    if (this.end1) this.end1.attributes.cx.value = val
 
     if (!this.isDraggingCircle) {
       if (this.end1 && this.end1.cx) {
@@ -219,10 +228,8 @@ class WireSegment extends HTMLElement {
     this._x2 = val
     this.setAttribute('x2', val)
 
-    if (this.line) {
-      this.line.attributes.x2.value = val
-      this.end2.attributes.cx.value = val
-    }
+    if (this.line) this.line.attributes.x2.value = val
+    if (this.end2) this.end2.attributes.cx.value = val
 
     if (!this.isDraggingCircle) {
       if (this.end2 && this.end2.cx) {
@@ -245,10 +252,8 @@ class WireSegment extends HTMLElement {
     this._y1 = val
     this.setAttribute('y1', val)
 
-    if (this.line) {
-      this.line.attributes.y1.value = val
-      this.end1.attributes.cy.value = val
-    }
+    if (this.line) this.line.attributes.y1.value = val
+    if (this.end1) this.end1.attributes.cy.value = val
 
     if (!this.isDraggingCircle) {
       if (this.end1 && this.end1.cx) {
@@ -271,10 +276,8 @@ class WireSegment extends HTMLElement {
     this._y2 = val
     this.setAttribute('y2', val)
 
-    if (this.line) {
-      this.line.attributes.y2.value = val
-      this.end2.attributes.cy.value = val
-    }
+    if (this.line) this.line.attributes.y2.value = val
+    if (this.end2) this.end2.attributes.cy.value = val
 
     if (!this.isDraggingCircle) {
       if (this.end2 && this.end2.cx) {
@@ -409,7 +412,13 @@ class WireSegment extends HTMLElement {
     if (this.connectedComponents.includes(newComponent)) return
 
     this.connectedComponents.push(newComponent)
-    newComponent.connect(this)
+    try {
+      newComponent.connect(this)
+    } catch (e) {
+      console.log(newComponent.constructor.name)
+      console.log(this.constructor.name)
+      console.error(e)
+    }
 
     if (this.isPowered && !newComponent.isPowered) {
       newComponent.poweredBy = this

@@ -37,7 +37,7 @@ window.customElements.define('component-container', class ComponentContainer ext
   }
 
   attachSVGElement (...elements) {
-    elements.forEach(element => this.svg.appendChild(element))
+    elements.forEach(element => element && this.svg.appendChild(element))
   }
 
   removeSVGElement (...elements) {
