@@ -1,5 +1,7 @@
 require('../components/')
 
+const mockCreateSVGRect = SVGSVGElement.prototype.createSVGRect = jest.fn(() => ({}))
+const mockCheckIntersection = SVGSVGElement.prototype.checkIntersection = jest.fn()
 
 const isPowered = wire => wire.isPowered
 const isGrounded = wire => wire.isGrounded
@@ -76,7 +78,7 @@ test('lighting up a bulb', () => {
 })
 
 test('a simple AND gate circuit', () => {
-  document.body.innerHTML = '<component-container></component-container>'
+  document.body.innerHTML = '<component-container no-ui></component-container>'
   const container = document.querySelector('component-container')
   const switch1 = container.addSwitch()
   const switch2 = container.addSwitch()
