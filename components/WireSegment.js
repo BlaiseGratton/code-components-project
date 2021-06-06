@@ -142,12 +142,7 @@ class WireSegment extends HTMLElement {
 
     overlappingCaps.forEach(cap => {
       if (!this.connectedComponents.includes(cap.parentComponent)) {
-        try {
-          this.connect(cap.parentComponent)
-        } catch (e) {
-          console.log(cap.parentComponent.constructor.name)
-          console.log(this.constructor.name)
-        }
+        this.connect(cap.parentComponent)
       }
     })
   }
@@ -412,13 +407,7 @@ class WireSegment extends HTMLElement {
     if (this.connectedComponents.includes(newComponent)) return
 
     this.connectedComponents.push(newComponent)
-    try {
-      newComponent.connect(this)
-    } catch (e) {
-      console.log(newComponent.constructor.name)
-      console.log(this.constructor.name)
-      console.error(e)
-    }
+    newComponent.connect(this)
 
     if (this.isPowered && !newComponent.isPowered) {
       newComponent.poweredBy = this
