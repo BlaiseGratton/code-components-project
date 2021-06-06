@@ -6,5 +6,4 @@ if (typeof process !== 'undefined') {
 }
 
 window.customElements.define('simple-relay', class SimpleRelay extends ComponentContainer {
-
-}
+})

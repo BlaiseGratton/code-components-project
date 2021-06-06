@@ -1,4 +1,4 @@
-window.customElements.define('component-container', class ComponentContainer extends HTMLElement {
+class ComponentContainer extends HTMLElement {
 
   constructor () {
     super()
@@ -153,4 +153,11 @@ window.customElements.define('component-container', class ComponentContainer ext
 
     return isOverlap
   }
-})
+}
+
+window.customElements.define('component-container', ComponentContainer)
+
+
+if (typeof module !== 'undefined') {
+  module.exports = { ComponentContainer }
+}

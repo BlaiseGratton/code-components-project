@@ -9,6 +9,10 @@ window.customElements.define('power-source', class PowerSource extends HTMLEleme
     this.style.display = 'contents'
     this.style.position = 'absolute'
 
+    let { 'x': xOffset, 'y': yOffset } = this.attributes
+    this.xOffset = xOffset ? parseInt(xOffset.value) : 0
+    this.yOffset = yOffset ? parseInt(yOffset.value) : 0
+
     const line1 = document.createElementNS('http://www.w3.org/2000/svg', 'line')
     line1.setAttribute('x1', 10)
     line1.setAttribute('y1', 10)
