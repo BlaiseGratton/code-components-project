@@ -135,7 +135,6 @@ class WireSegment extends HTMLElement {
       if (className === 'PowerSource' || className === 'GroundConnection') return
 
       if (!this.parentElement.capsOverlap(component, otherEndCap) && !this.parentElement.noUI) {
-
         !(this.parentComponent === component) && this.disconnect(component)
       }
     })

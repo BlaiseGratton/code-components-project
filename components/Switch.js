@@ -10,7 +10,6 @@ window.customElements.define('simple-switch', class SimpleSwitch extends WireSeg
   connectedCallback () {
     super.connectedCallback()
 
-    //this.switchWire = document.createElement('wire-segment')
     this.wire1 = document.createElement('wire-segment')
     this.wire2 = document.createElement('wire-segment')
     this.wire1.parentComponent = this
@@ -18,7 +17,6 @@ window.customElements.define('simple-switch', class SimpleSwitch extends WireSeg
 
     this.parentElement.appendChild(this.wire1)
     this.parentElement.appendChild(this.wire2)
-    //this.switchWire.connect(this.wire1, true)
     this.connect(this.wire1)
 
     this.wire1.x2 = this.x1
