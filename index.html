@@ -18,14 +18,22 @@
 <body>
   <component-container>
     <power-source></power-source>
-    <power-source></power-source>
-    <ground-connection></ground-connection>
-    <ground-connection></ground-connection>
-    <simple-switch x1="40" y1="130" x2="100" y2="130"i id="wire-3"></simple-switch>
-    <wire-coil x1="18" y1="139" x2="90" y2="140" id="wire-coil"></wire-coil>
+    <wire-segment x1="18" y1="77" x2="18" y2="139"></wire-segment>
+    <wire-segment x1="18" y1="139" x2="33" y2="138"></wire-segment>
+    <simple-switch x1="52" y1="142" x2="100" y2="142"></simple-switch>
+    <wire-segment x1="110" y1="139" x2="125" y2="138"></wire-segment>
+    <wire-segment x1="125" y1="139" x2="140" y2="20"></wire-segment>
+    <wire-segment x1="140" y1="20" x2="172" y2="18"></wire-segment>
+    <ground-connection x="55" y="-38"></ground-connection>
 
-    <!--wire-segment x1="18" y1="77" x2="18" y2="139" id="wire-2"></wire-segment>
-    <simple-bulb x1="80" y1="30" x2="115" y2="58"></simple-bulb-->
+    <power-source x="50"></power-source>
+    <simple-switch x1="84" y1="80" x2="110" y2="80"></simple-switch>
+    <wire-segment x1="118" y1="80" x2="7" y2="119"></wire-segment>
+    <wire-segment x1="7" y1="119" x2="7" y2="159"></wire-segment>
+    <wire-segment x1="7" y1="159" x2="48" y2="159"></wire-segment>
+    <wire-coil x1="48" y1="159" x2="95" y2="160"></wire-coil>
+    <wire-segment x1="95" y1="159" x2="163" y2="136"></wire-segment>
+    <ground-connection x="50" y="80"></ground-connection>
   </component-container>
   <script src="./components/ComponentContainer.js"></script>
   <script src="./components/ContactPoint.js"></script>
