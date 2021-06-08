@@ -35,6 +35,10 @@ window.customElements.define('simple-switch', class SimpleSwitch extends WireSeg
     if (this.isClosed) {
       this.connect(this.wire2)
     }
+
+    if (this.id && this.parentElement) {
+      this.parentElement.connectCoilsToSwitch(this)
+    }
   }
 
   constructor (isClosed) {

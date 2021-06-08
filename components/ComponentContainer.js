@@ -153,6 +153,16 @@ class ComponentContainer extends HTMLElement {
 
     return isOverlap
   }
+
+  connectCoilsToSwitch (switchComponent) {
+    const coilsToConnect = this.querySelectorAll(`wire-coil[for="${switchComponent.id}"]`)
+    coilsToConnect.forEach(coil => coil.connectSwitch(switchComponent))
+  }
+
+  connectSwitchesToCoil (coilComponent) {
+    const switchesToConnect = this.querySelectorAll(`simple-switch#${coilComponent.attributes.for.value}`)
+    switchesToConnect.forEach(switchComp => coilComponent.connectSwitch(switchComp))
+  }
 }
 
 window.customElements.define('component-container', ComponentContainer)

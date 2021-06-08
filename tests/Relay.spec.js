@@ -1,3 +1,5 @@
-test('rendering a relay component', () => {
-  it('renders', () => {})
+describe('rendering a relay component', () => {
+
+  it('renders', () => {
+  })
 })
