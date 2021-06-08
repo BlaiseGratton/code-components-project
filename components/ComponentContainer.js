@@ -4,9 +4,12 @@ class ComponentContainer extends HTMLElement {
     super()
 
     const {
-      width = 200,
-      height = 200,
+      'width': widthAttribute,
+      'height': heightAttribute,
     } = this.attributes
+
+    const width = widthAttribute ? widthAttribute.value : 200
+    const height = heightAttribute ? heightAttribute.value : 200
 
     this.noUI = Boolean(this.attributes['no-ui']) // for skipping checking SVG overlaps
 
