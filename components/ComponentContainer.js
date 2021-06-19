@@ -1,17 +1,24 @@
 class ComponentContainer extends HTMLElement {
 
-  constructor () {
-    super()
+  connectedCallback () {
 
     const {
       'width': widthAttribute,
       'height': heightAttribute,
+      'x': xAttribute,
+      'y': yAttribute,
     } = this.attributes
 
     const width = widthAttribute ? widthAttribute.value : 200
     const height = heightAttribute ? heightAttribute.value : 200
+    const xOffset = xAttribute ? parseInt(xAttribute.value) : 0
+    const yOffset = yAttribute ? parseInt(yAttribute.value) : 0
 
     this.noUI = Boolean(this.attributes['no-ui']) // for skipping checking SVG overlaps
+
+    this.style.position = 'absolute'
+    this.style.left = `${xOffset}px`
+    this.style.top = `${yOffset}px`
 
     const style = document.createElement('style')
 
@@ -22,6 +29,7 @@ class ComponentContainer extends HTMLElement {
     `
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+
     svg.setAttributeNS(
       'http://www.w3.org/2000/xmlns/',
       'xmlns:xlink',
@@ -33,10 +41,11 @@ class ComponentContainer extends HTMLElement {
 
     this.appendChild(style)
     this.appendChild(svg)
+    this._svg = svg
   }
 
   get svg () {
-    return this.querySelector('svg')
+    return this._svg
   }
 
   attachSVGElement (...elements) {
@@ -45,6 +54,21 @@ class ComponentContainer extends HTMLElement {
 
   removeSVGElement (...elements) {
     elements.forEach(element => this.svg.removeChild(element))
+  }
+
+  exposeWireCap (endCap, xOffset, yOffset, direction) {
+    const yOffsets = { up: 25, down: -25 }
+    const xOffsets = { left: 25, right: -25 }
+
+    const wire = document.createElement('wire-segment')
+    const capX = endCap.cx.baseVal.value
+    const capY = endCap.cy.baseVal.value
+    wire.setAttribute('x1', capX + xOffset - 4)
+    wire.setAttribute('y1', capY + yOffset - 4)
+    wire.setAttribute('x2', capX + xOffset - 4 - (xOffsets[direction] || 0))
+    wire.setAttribute('y2', capY + yOffset - 4 - (yOffsets[direction] || 0))
+    wire.connect(endCap.parentComponent)
+    this.appendChild(wire)
   }
 
   addWireSegment ({ x1 = 0, y1 = 0, x2 = 20, y2 = 20 } = {}, testId) {
