@@ -56,7 +56,9 @@ class ComponentContainer extends HTMLElement {
     elements.forEach(element => this.svg.removeChild(element))
   }
 
-  exposeWireCap (endCap, xOffset, yOffset, direction) {
+  exposeWireCap (endCap, direction) {
+    const xOffset = parseInt(endCap.parentComponent.parentElement.style.left)
+    const yOffset = parseInt(endCap.parentComponent.parentElement.style.top)
     const yOffsets = { up: 25, down: -25 }
     const xOffsets = { left: 25, right: -25 }
 
