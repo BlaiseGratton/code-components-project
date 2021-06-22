@@ -61,16 +61,25 @@ class ComponentContainer extends HTMLElement {
     const yOffset = parseInt(endCap.parentComponent.parentElement.style.top)
     const yOffsets = { up: 25, down: -25 }
     const xOffsets = { left: 25, right: -25 }
-
     const wire = document.createElement('wire-segment')
-    const capX = endCap.cx.baseVal.value
-    const capY = endCap.cy.baseVal.value
+
+    let capX, capY
+
+    if (typeof process === 'undefined') {
+      capX = endCap.cx.baseVal.value
+      capY = endCap.cy.baseVal.value
+    } else {
+      // in a testing context here
+      capX = endCap.parentComponent.x1
+      capY = endCap.parentComponent.y1
+    }
     wire.setAttribute('x1', capX + xOffset - 4)
     wire.setAttribute('y1', capY + yOffset - 4)
     wire.setAttribute('x2', capX + xOffset - 4 - (xOffsets[direction] || 0))
     wire.setAttribute('y2', capY + yOffset - 4 - (yOffsets[direction] || 0))
     wire.connect(endCap.parentComponent)
     this.appendChild(wire)
+    return wire
   }
 
   addWireSegment ({ x1 = 0, y1 = 0, x2 = 20, y2 = 20 } = {}, testId) {
@@ -112,6 +121,18 @@ class ComponentContainer extends HTMLElement {
     const wireCoil = document.createElement('wire-coil')
     this.appendChild(wireCoil)
     return wireCoil
+  }
+
+  addRelay ({ x, y} = {}) {
+    const relay = document.createElement('simple-relay')
+
+    if (x && y) {
+      relay.setAttribute('x', x)
+      relay.setAttribute('y', y)
+    }
+
+    this.appendChild(relay)
+    return relay
   }
 
   handleIntersections (movedEnd, xOffset, yOffset) {
