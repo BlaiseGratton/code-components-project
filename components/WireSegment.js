@@ -75,9 +75,8 @@ class WireSegment extends HTMLElement {
 
         cap.addEventListener('mouseup', function ({ currentTarget, clientX, clientY, ...ev }) {
           self.isDraggingCircle = false
-          const offset = self.constructor.CIRCLE_CAP_RADIUS * 2 + self.constructor.STROKE_WIDTH
-          const xOffset = clientX - offset
-          const yOffset = clientY - offset
+          const xOffset = clientX - parseInt(this.parentComponent.parentElement.style.left)
+          const yOffset = clientY - parseInt(this.parentComponent.parentElement.style.top)
           self.checkForOverlappingComponents(currentTarget, xOffset, yOffset)
         })
 
@@ -132,10 +131,15 @@ class WireSegment extends HTMLElement {
 
     this.connectedComponents.forEach(component => {
       const className = component.constructor.name
-      if (className === 'PowerSource' || className === 'GroundConnection') return
+      if (['PowerSource', 'GroundConnection'].includes(className)) return
+      if (component.noDisconnect) return
 
-      if (!this.parentElement.capsOverlap(component, otherEndCap) && !this.parentElement.noUI) {
-        !(this.parentComponent === component) && this.disconnect(component)
+      if (
+        !this.parentElement.capsOverlap(component, otherEndCap) &&
+        !this.parentElement.noUI &&
+        !(this.parentComponent === component)
+      ) {
+        this.disconnect(component)
       }
     })
 
@@ -160,6 +164,8 @@ class WireSegment extends HTMLElement {
     this.poweredBy = null
     this.groundedTo = null
     this.testId = this.constructor.testIdCounter++
+
+    this.redraw = this.redraw.bind(this)
 
     this.attributeChangeHandlers = {
       /*
@@ -293,6 +299,17 @@ class WireSegment extends HTMLElement {
   get line () { return this._line }
   get end1 () { return this._end1 }
   get end2 () { return this._end2 }
+
+  get xOffset () {
+    // need to make these recursive, ooooh weee
+    const offset = parseInt(this.parentElement.style.left)
+    return offset //+ this.parentElement.xOffset || 0
+  }
+
+  get yOffset () {
+    const offset = parseInt(this.parentElement.style.top)
+    return offset //+ this.parentElement.yOffset || 0
+  }
 
   set svgViewWidth (value) {
     let [x, y, width, height] = this.svgViewWidth.split(' ')
@@ -457,8 +474,9 @@ class WireSegment extends HTMLElement {
 
   redraw ({ currentTarget, clientX, clientY, ...ev }) {
     const movedEnd = currentTarget
-    const xOffset = clientX - this.constructor.ENDCAP_OFFSET
-    const yOffset = clientY - this.constructor.ENDCAP_OFFSET
+    const xOffset = clientX - this.xOffset
+    const yOffset = clientY - this.yOffset
+
     movedEnd.attributes.cx.value = xOffset
     movedEnd.attributes.cy.value = yOffset
 

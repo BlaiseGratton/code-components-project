@@ -1,14 +1,24 @@
-window.customElements.define('component-container', class ComponentContainer extends HTMLElement {
+class ComponentContainer extends HTMLElement {
 
-  constructor () {
-    super()
+  connectedCallback () {
 
     const {
-      width = 200,
-      height = 200,
+      'width': widthAttribute,
+      'height': heightAttribute,
+      'x': xAttribute,
+      'y': yAttribute,
     } = this.attributes
 
+    const width = widthAttribute ? widthAttribute.value : 200
+    const height = heightAttribute ? heightAttribute.value : 200
+    const xOffset = xAttribute ? parseInt(xAttribute.value) : 0
+    const yOffset = yAttribute ? parseInt(yAttribute.value) : 0
+
     this.noUI = Boolean(this.attributes['no-ui']) // for skipping checking SVG overlaps
+
+    this.style.position = 'absolute'
+    this.style.left = `${xOffset}px`
+    this.style.top = `${yOffset}px`
 
     const style = document.createElement('style')
 
@@ -19,6 +29,7 @@ window.customElements.define('component-container', class ComponentContainer ext
     `
 
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+
     svg.setAttributeNS(
       'http://www.w3.org/2000/xmlns/',
       'xmlns:xlink',
@@ -30,10 +41,11 @@ window.customElements.define('component-container', class ComponentContainer ext
 
     this.appendChild(style)
     this.appendChild(svg)
+    this._svg = svg
   }
 
   get svg () {
-    return this.querySelector('svg')
+    return this._svg
   }
 
   attachSVGElement (...elements) {
@@ -42,6 +54,32 @@ window.customElements.define('component-container', class ComponentContainer ext
 
   removeSVGElement (...elements) {
     elements.forEach(element => this.svg.removeChild(element))
+  }
+
+  exposeWireCap (endCap, direction) {
+    const xOffset = parseInt(endCap.parentComponent.parentElement.style.left)
+    const yOffset = parseInt(endCap.parentComponent.parentElement.style.top)
+    const yOffsets = { up: 25, down: -25 }
+    const xOffsets = { left: 25, right: -25 }
+    const wire = document.createElement('wire-segment')
+
+    let capX, capY
+
+    if (typeof process === 'undefined') {
+      capX = endCap.cx.baseVal.value
+      capY = endCap.cy.baseVal.value
+    } else {
+      // in a testing context here
+      capX = endCap.parentComponent.x1
+      capY = endCap.parentComponent.y1
+    }
+    wire.setAttribute('x1', capX + xOffset - 4)
+    wire.setAttribute('y1', capY + yOffset - 4)
+    wire.setAttribute('x2', capX + xOffset - 4 - (xOffsets[direction] || 0))
+    wire.setAttribute('y2', capY + yOffset - 4 - (yOffsets[direction] || 0))
+    wire.connect(endCap.parentComponent)
+    this.appendChild(wire)
+    return wire
   }
 
   addWireSegment ({ x1 = 0, y1 = 0, x2 = 20, y2 = 20 } = {}, testId) {
@@ -83,6 +121,18 @@ window.customElements.define('component-container', class ComponentContainer ext
     const wireCoil = document.createElement('wire-coil')
     this.appendChild(wireCoil)
     return wireCoil
+  }
+
+  addRelay ({ x, y} = {}) {
+    const relay = document.createElement('simple-relay')
+
+    if (x && y) {
+      relay.setAttribute('x', x)
+      relay.setAttribute('y', y)
+    }
+
+    this.appendChild(relay)
+    return relay
   }
 
   handleIntersections (movedEnd, xOffset, yOffset) {
@@ -153,4 +203,21 @@ window.customElements.define('component-container', class ComponentContainer ext
 
     return isOverlap
   }
-})
+
+  connectCoilsToSwitch (switchComponent) {
+    const coilsToConnect = this.querySelectorAll(`wire-coil[for="${switchComponent.id}"]`)
+    coilsToConnect.forEach(coil => coil.connectSwitch(switchComponent))
+  }
+
+  connectSwitchesToCoil (coilComponent) {
+    const switchesToConnect = this.querySelectorAll(`simple-switch#${coilComponent.attributes.for.value}`)
+    switchesToConnect.forEach(switchComp => coilComponent.connectSwitch(switchComp))
+  }
+}
+
+window.customElements.define('component-container', ComponentContainer)
+
+
+if (typeof module !== 'undefined') {
+  module.exports = { ComponentContainer }
+}

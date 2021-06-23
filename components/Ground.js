@@ -10,28 +10,33 @@ window.customElements.define('ground-connection', class GroundConnection extends
     this.style.position = 'absolute'
 
     const line1 = document.createElementNS('http://www.w3.org/2000/svg', 'line')
-    const Y_OFFSET = 100
+    const Y_OFFSET = 100  // for the horizontal bars of the symbol, not component positioning
 
-    line1.setAttribute('x1', 100)
-    line1.setAttribute('y1', Y_OFFSET)
-    line1.setAttribute('x2', 140)
-    line1.setAttribute('y2', Y_OFFSET)
+    let { 'x': xOffset, 'y': yOffset } = this.attributes
+    this.xOffset = xOffset ? parseInt(xOffset.value) : 0
+    this.yOffset = yOffset ? parseInt(yOffset.value) : 0
+
+
+    line1.setAttribute('x1', 100 + this.xOffset)
+    line1.setAttribute('y1', Y_OFFSET + this.yOffset)
+    line1.setAttribute('x2', 140 + this.xOffset)
+    line1.setAttribute('y2', Y_OFFSET + this.yOffset)
     line1.setAttribute('stroke', 'black')
     line1.setAttribute('stroke-width', 3)
 
     const line2 = document.createElementNS('http://www.w3.org/2000/svg', 'line')
-    line2.setAttribute('x1', 110)
-    line2.setAttribute('y1', Y_OFFSET + 8)
-    line2.setAttribute('x2', 130)
-    line2.setAttribute('y2', Y_OFFSET + 8)
+    line2.setAttribute('x1', 110 + this.xOffset)
+    line2.setAttribute('y1', Y_OFFSET + 8 + this.yOffset)
+    line2.setAttribute('x2', 130 + this.xOffset)
+    line2.setAttribute('y2', Y_OFFSET + 8 + this.yOffset)
     line2.setAttribute('stroke', 'black')
     line2.setAttribute('stroke-width', 3)
 
     const line3 = document.createElementNS('http://www.w3.org/2000/svg', 'line')
-    line3.setAttribute('x1', 116)
-    line3.setAttribute('y1', Y_OFFSET + 16)
-    line3.setAttribute('x2', 124)
-    line3.setAttribute('y2', Y_OFFSET + 16)
+    line3.setAttribute('x1', 116 + this.xOffset)
+    line3.setAttribute('y1', Y_OFFSET + 16 + this.yOffset)
+    line3.setAttribute('x2', 124 + this.xOffset)
+    line3.setAttribute('y2', Y_OFFSET + 16 + this.yOffset)
     line3.setAttribute('stroke', 'black')
     line3.setAttribute('stroke-width', 3)
 
@@ -47,10 +52,10 @@ window.customElements.define('ground-connection', class GroundConnection extends
   addWireSegment ({ x2 = 120, y2 = 100 } = {}) {
     const segment = document.createElement('wire-segment')
     this.parentElement.appendChild(segment)
-    segment.x1 = 120
-    segment.x2 = x2
-    segment.y1 = 60
-    segment.y2 = y2
+    segment.x1 = 120 + this.xOffset
+    segment.x2 = x2 + this.xOffset
+    segment.y1 = 60 + this.yOffset
+    segment.y2 = y2 + this.yOffset
     segment.connect(this)
     this.parentSVG.removeChild(segment.end2)
     return segment

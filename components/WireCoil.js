@@ -20,6 +20,10 @@ window.customElements.define('wire-coil', class WireCoil extends WireSegment {
     }
     
     this.drawCoil()
+
+    if (this.attributes.for && this.attributes.for.value && this.parentElement) {
+      this.parentElement.connectSwitchesToCoil(this)
+    }
   }
 
   drawCoil () {

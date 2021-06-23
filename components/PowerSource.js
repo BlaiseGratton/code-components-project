@@ -9,19 +9,23 @@ window.customElements.define('power-source', class PowerSource extends HTMLEleme
     this.style.display = 'contents'
     this.style.position = 'absolute'
 
+    let { 'x': xOffset, 'y': yOffset } = this.attributes
+    this.xOffset = xOffset ? parseInt(xOffset.value) : 0
+    this.yOffset = yOffset ? parseInt(yOffset.value) : 0
+
     const line1 = document.createElementNS('http://www.w3.org/2000/svg', 'line')
-    line1.setAttribute('x1', 10)
-    line1.setAttribute('y1', 10)
-    line1.setAttribute('x2', 22)
-    line1.setAttribute('y2', 40)
+    line1.setAttribute('x1', 10 + this.xOffset)
+    line1.setAttribute('y1', 10 + this.yOffset)
+    line1.setAttribute('x2', 22 + this.xOffset)
+    line1.setAttribute('y2', 40 + this.yOffset)
     line1.setAttribute('stroke', 'black')
     line1.setAttribute('stroke-width', 4)
 
     const line2 = document.createElementNS('http://www.w3.org/2000/svg', 'line')
-    line2.setAttribute('x1', 22)
-    line2.setAttribute('y1', 40)
-    line2.setAttribute('x2', 34)
-    line2.setAttribute('y2', 10)
+    line2.setAttribute('x1', 22 + this.xOffset)
+    line2.setAttribute('y1', 40 + this.yOffset)
+    line2.setAttribute('x2', 34 + this.xOffset)
+    line2.setAttribute('y2', 10 + this.yOffset)
     line2.setAttribute('stroke', 'black')
     line2.setAttribute('stroke-width', 4)
 
@@ -54,10 +58,10 @@ window.customElements.define('power-source', class PowerSource extends HTMLEleme
   addWireSegment ({ x2 = 22, y2 = 80 } = {}) {
     const segment = document.createElement('wire-segment')
     this.parentElement.appendChild(segment)
-    segment.x1 = 22
-    segment.x2 = x2
-    segment.y1 = 40
-    segment.y2 = y2
+    segment.x1 = 22 + this.xOffset
+    segment.x2 = x2 + this.xOffset
+    segment.y1 = 40 + this.yOffset
+    segment.y2 = y2 + this.yOffset
     segment.connect(this)
     this.parentSVG.removeChild(segment.end1)
     return segment
