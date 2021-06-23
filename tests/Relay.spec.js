@@ -1,11 +1,4 @@
-require('../components/ComponentContainer')
-require('../components/Ground')
-require('../components/WireSegment')
-require('../components/Bulb')
-require('../components/Relay')
-require('../components/PowerSource')
-require('../components/Switch')
-require('../components/WireCoil')
+import * as components from '../components/index.js'
 
 
 const mockCreateSVGRect = SVGSVGElement.prototype.createSVGRect = jest.fn(() => ({}))

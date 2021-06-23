@@ -1,11 +1,7 @@
-if (typeof process !== 'undefined') {
-  const module = require('../components/WireSegment')
-  WireSegment = module.WireSegment
-} else if (typeof WireSegment === 'undefined') {
-  throw new Error('[Switch.js] WireSegment is undefined - did you load it before loading this script?')
-}
+import WireSegment from './WireSegment.js'
 
-window.customElements.define('simple-switch', class SimpleSwitch extends WireSegment {
+
+class SimpleSwitch extends WireSegment {
 
   connectedCallback () {
     super.connectedCallback()
@@ -75,4 +71,8 @@ window.customElements.define('simple-switch', class SimpleSwitch extends WireSeg
       super.connect(component)
     }
   }
-})
+}
+
+window.customElements.define('simple-switch', SimpleSwitch)
+
+export default SimpleSwitch

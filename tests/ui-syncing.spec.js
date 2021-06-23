@@ -1,4 +1,4 @@
-require('../components/')
+import * as components from '../components/index.js'
 
 // jsdom does not fully support all SVGElement methods, so have to figure out how to
 // fill in the gaps here

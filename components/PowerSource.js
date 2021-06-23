@@ -1,4 +1,4 @@
-window.customElements.define('power-source', class PowerSource extends HTMLElement {
+class PowerSource extends HTMLElement {
 
   get ALWAYS_POWERED () { return { isPowered: true } }
 
@@ -90,4 +90,8 @@ window.customElements.define('power-source', class PowerSource extends HTMLEleme
     this.connectedComponents = this.connectedComponents.filter(x => x !== oldComponent)
     oldComponent.disconnect(this)
   }
-})
+}
+
+window.customElements.define('power-source', PowerSource)
+
+export default PowerSource

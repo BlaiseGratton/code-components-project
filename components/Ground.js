@@ -1,4 +1,4 @@
-window.customElements.define('ground-connection', class GroundConnection extends HTMLElement {
+class GroundConnection extends HTMLElement {
 
   get ALWAYS_GROUNDED () { return { isGrounded: true } }
 
@@ -108,4 +108,8 @@ window.customElements.define('ground-connection', class GroundConnection extends
     this.connectedComponents = this.connectedComponents.filter(x => x !== oldComponent)
     oldComponent.disconnect(this)
   }
-})
+}
+
+window.customElements.define('ground-connection', GroundConnection)
+
+export default GroundConnection

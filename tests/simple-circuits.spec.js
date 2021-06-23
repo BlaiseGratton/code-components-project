@@ -1,4 +1,5 @@
-require('../components/')
+import * as components from '../components/index.js'
+
 
 const mockCreateSVGRect = SVGSVGElement.prototype.createSVGRect = jest.fn(() => ({}))
 const mockCheckIntersection = SVGSVGElement.prototype.checkIntersection = jest.fn()
