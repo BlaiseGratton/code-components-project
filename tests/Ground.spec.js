@@ -1,6 +1,4 @@
-require('../components/ComponentContainer')
-require('../components/Ground')
-require('../components/WireSegment')
+import * as components from '../components/index.js'
 
 
 test('adding a (default) ground point to component container', () => {

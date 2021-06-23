@@ -1,11 +1,7 @@
-if (typeof process !== 'undefined') {
-  const module = require('../components/ComponentContainer')
-  ComponentContainer = module.ComponentContainer
-} else if (typeof ComponentContainer === 'undefined') {
-  throw new Error('[Relay.js] ComponentContainer is undefined - did you load it before loading this script?')
-}
+import ComponentContainer from './ComponentContainer.js'
 
-window.customElements.define('simple-relay', class SimpleRelay extends ComponentContainer {
+
+class SimpleRelay extends ComponentContainer {
 
   connectedCallback () {
     super.connectedCallback()
@@ -79,4 +75,8 @@ window.customElements.define('simple-relay', class SimpleRelay extends Component
     ground.connect(wire4)
   }
 
-})
+}
+
+window.customElements.define('simple-relay', SimpleRelay)
+
+export default SimpleRelay

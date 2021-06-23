@@ -1,11 +1,7 @@
-if (typeof process !== 'undefined') {
-  const module = require('../components/WireSegment')
-  WireSegment = module.WireSegment
-} else if (typeof WireSegment === 'undefined') {
-  throw new Error('[Switch.js] WireSegment is undefined - did you load it before loading this script?')
-}
+import WireSegment from './WireSegment.js'
 
-window.customElements.define('wire-coil', class WireCoil extends WireSegment {
+
+class WireCoil extends WireSegment {
 
   constructor () {
     super()
@@ -130,4 +126,8 @@ window.customElements.define('wire-coil', class WireCoil extends WireSegment {
       for (const swich of this.switches) swich.open()
     }
   }
-})
+}
+
+window.customElements.define('wire-coil', WireCoil)
+
+export default WireCoil

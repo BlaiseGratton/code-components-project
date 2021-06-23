@@ -1,6 +1,4 @@
-require('../components/ComponentContainer')
-require('../components/WireSegment')
-require('../components/PowerSource')
+import * as components from '../components/index.js'
 
 
 // helpers
@@ -98,7 +96,11 @@ test('connecting a wire segment to another segment', () => {
   expect(wire2.isPowered).toBe(false)
 
   // can't set isPowered willy nilly right now, need a power source
-  wire1.isPowered = true
+  const error = () => {
+    wire1.isPowered = true
+  }
+
+  expect(error).toThrow(TypeError)
   expect(wire1.isPowered).toBe(false)
   expect(wire2.isPowered).toBe(false)
 })
@@ -166,7 +168,8 @@ test('connecting multiple segments to a power source', () => {
 test('making a wire loop and connecting it to power', () => {
   document.body.innerHTML = '<component-container></component-container>'
   const container = document.querySelector('component-container')
-  const [wire1, wire2, wire3, wire4, wire5, wire6] = wires = addNSegmentsToContainer(container, 6)
+  const wires = addNSegmentsToContainer(container, 6)
+  const [wire1, wire2, wire3, wire4, wire5, wire6] = wires
   wire1.connect(wire2)
   wire2.connect(wire3)
   wire3.connect(wire4)
@@ -262,8 +265,9 @@ test('powering parallel lines connected like a ladder', () => {
   document.body.innerHTML = '<component-container></component-container>'
   const container = document.querySelector('component-container')
   const powerSource = container.addPowerSource()
+  const wires = addNSegmentsToContainer(container, 14)
   const [w1, w2, w3, w4, w5, w6, w7,
-         w8, w9, w10, w11, w12, w13, w14] = wires = addNSegmentsToContainer(container, 14)
+         w8, w9, w10, w11, w12, w13, w14] = wires
 
   /*   V _1_ _2_ _3_ _4_ _5_ _6_
    *    |       |13     |14

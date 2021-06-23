@@ -217,7 +217,4 @@ class ComponentContainer extends HTMLElement {
 
 window.customElements.define('component-container', ComponentContainer)
 
-
-if (typeof module !== 'undefined') {
-  module.exports = { ComponentContainer }
-}
+export default ComponentContainer

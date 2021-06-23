@@ -1,6 +1,4 @@
-require('../components/ComponentContainer')
-require('../components/WireSegment')
-require('../components/Bulb')
+import * as components from '../components/index.js'
 
 describe('properties of a simple bulb', () => {
   it('renders', () => {

@@ -1,6 +1,4 @@
-require('../components/ComponentContainer')
-require('../components/PowerSource')
-require('../components/WireSegment')
+import * as components from '../components/index.js'
 
 
 test('adding a (default) power source to component container', () => {

@@ -500,6 +500,4 @@ class WireSegment extends HTMLElement {
 
 window.customElements.define('wire-segment', WireSegment)
 
-if (typeof module !== 'undefined') {
-  module.exports = { WireSegment }
-}
+export default WireSegment
