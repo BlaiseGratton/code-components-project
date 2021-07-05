@@ -6,3 +6,5 @@ import Bulb from './Bulb.js'
 import WireCoil from './WireCoil.js'
 import SimpleSwitch from './Switch.js'
 import SimpleRelay from './Relay.js'
+
+import gates from './gates/ANDGate.js'

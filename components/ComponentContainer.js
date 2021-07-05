@@ -135,6 +135,20 @@ class ComponentContainer extends HTMLElement {
     return relay
   }
 
+  addANDGate ({ x, y} = {}) {
+    const ANDGate = document.createElement('and-gate')
+
+    if (x && y) {
+      ANDGate.setAttribute('x', x)
+      ANDGate.setAttribute('y', y)
+    }
+
+    this.appendChild(ANDGate)
+    return ANDGate
+  }
+
+
+
   handleIntersections (movedEnd, xOffset, yOffset) {
     if (!this.svg.createSVGRect) return []
     const movedWire = movedEnd.parentComponent
