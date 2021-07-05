@@ -34,7 +34,7 @@ class PowerSource extends HTMLElement {
       this.parentElement.attachSVGElement(line2)
     }
 
-    this.addWireSegment()
+    this.wire = this.addWireSegment()
   }
 
   toJSON () {
