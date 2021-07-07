@@ -147,7 +147,17 @@ class ComponentContainer extends HTMLElement {
     return ANDGate
   }
 
+  addORGate ({ x, y} = {}) {
+    const ORGate = document.createElement('or-gate')
 
+    if (x && y) {
+      ORGate.setAttribute('x', x)
+      ORGate.setAttribute('y', y)
+    }
+
+    this.appendChild(ORGate)
+    return ORGate
+  }
 
   handleIntersections (movedEnd, xOffset, yOffset) {
     if (!this.svg.createSVGRect) return []
