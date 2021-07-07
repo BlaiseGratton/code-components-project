@@ -7,4 +7,4 @@ import WireCoil from './WireCoil.js'
 import SimpleSwitch from './Switch.js'
 import SimpleRelay from './Relay.js'
 
-import gates from './gates/ANDGate.js'
+import gates from './gates/index.js'
