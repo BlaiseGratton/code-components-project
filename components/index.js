@@ -6,5 +6,7 @@ import Bulb from './Bulb.js'
 import WireCoil from './WireCoil.js'
 import SimpleSwitch from './Switch.js'
 import SimpleRelay from './Relay.js'
+import ThrowSwitch from './ThrowSwitch.js'
+import InverterRelay from './InverterRelay.js'
 
-import gates from './gates/index.js'
+import * as gates from './gates/index.js'
