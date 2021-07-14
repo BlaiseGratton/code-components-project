@@ -9,4 +9,4 @@ import ThrowSwitch from './ThrowSwitch.js'
 import SimpleRelay from './Relay.js'
 import InverterRelay from './InverterRelay.js'
 
-import gates from './gates/index.js'
+import * as gates from './gates/index.js'
