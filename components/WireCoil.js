@@ -12,7 +12,7 @@ class WireCoil extends WireSegment {
     super.connectedCallback()
 
     if (typeof process !== 'undefined' && !this.id) {
-      this.id = `bulb-${this.testId}`
+      this.id = `wire-coil-${this.testId}`
     }
     
     this.drawCoil()
@@ -101,12 +101,12 @@ class WireCoil extends WireSegment {
 
     if (this.isGrounded) {
       if (!wasPowered && isNowPowered) {
-        for (const swich of this.switches) swich.close()
+        for (const swich of this.switches) swich.onGainMagnetise()
       }
     }
 
     if (wasPowered && !isNowPowered) {
-      for (const swich of this.switches) swich.open()
+      for (const swich of this.switches) swich.onLoseMagnetise()
     }
   }
 
@@ -118,12 +118,12 @@ class WireCoil extends WireSegment {
 
     if (this.isPowered) {
       if (!wasGrounded && isNowGrounded) {
-        for (const swich of this.switches) swich.close()
+        for (const swich of this.switches) swich.onGainMagnetise()
       }
     }
 
     if (wasGrounded && !isNowGrounded) {
-      for (const swich of this.switches) swich.open()
+      for (const swich of this.switches) swich.onLoseMagnetise()
     }
   }
 }

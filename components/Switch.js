@@ -25,6 +25,7 @@ class SimpleSwitch extends WireSegment {
     this.wire2.x2 = this.x2 + 12
     this.wire2.y2 = this.y2
 
+    this.y1 += 1
     this.x2 -= 20
     this.y2 -= 20
 
@@ -43,6 +44,10 @@ class SimpleSwitch extends WireSegment {
   }
 
   get isOpen () { return !this.isClosed }
+
+  onLoseMagnetise () { this.open() }
+
+  onGainMagnetise () { this.close() }
 
   open () {
     if (!this.isOpen) {

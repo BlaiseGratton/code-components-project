@@ -43,7 +43,7 @@ class WireSegment extends HTMLElement {
     line.parentComponent = this
     this._line = line
 
-    if (!(this.constructor.name === 'SimpleSwitch')) {
+    if (!(this.constructor.name === 'SimpleSwitch' || this.constructor.name === 'ThrowSwitch')) {
       const segmentEnd1 = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
       segmentEnd1.setAttribute('class', 'segment-cap')
       segmentEnd1.setAttribute('cx', this.x1 + this.constructor.CIRCLE_CAP_RADIUS)
