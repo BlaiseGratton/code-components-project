@@ -10,6 +10,7 @@ class ThrowSwitch extends SimpleSwitch {
 
     this.x2 = this.wire2.x1
     this.y2 = this.wire2.y1
+    if (this.isClosed) this.connect(this.wire2)
   }
 
   constructor (isClosed = true) {
