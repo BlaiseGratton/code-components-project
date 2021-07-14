@@ -123,7 +123,7 @@ class ComponentContainer extends HTMLElement {
     return wireCoil
   }
 
-  addRelay ({ x, y} = {}) {
+  addRelay ({ x, y } = {}) {
     const relay = document.createElement('simple-relay')
 
     if (x && y) {
@@ -135,7 +135,7 @@ class ComponentContainer extends HTMLElement {
     return relay
   }
 
-  addANDGate ({ x, y} = {}) {
+  addANDGate ({ x, y } = {}) {
     const ANDGate = document.createElement('and-gate')
 
     if (x && y) {
@@ -147,7 +147,7 @@ class ComponentContainer extends HTMLElement {
     return ANDGate
   }
 
-  addORGate ({ x, y} = {}) {
+  addORGate ({ x, y } = {}) {
     const ORGate = document.createElement('or-gate')
 
     if (x && y) {
@@ -157,6 +157,18 @@ class ComponentContainer extends HTMLElement {
 
     this.appendChild(ORGate)
     return ORGate
+  }
+
+  addNORGate ({ x, y } = {}) {
+    const NORGate = document.createElement('nor-gate')
+
+    if (x && y) {
+      NORGate.setAttribute('x', x)
+      NORGate.setAttribute('y', y)
+    }
+
+    this.appendChild(NORGate)
+    return NORGate
   }
 
   handleIntersections (movedEnd, xOffset, yOffset) {

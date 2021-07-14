@@ -1,6 +1,5 @@
 import ComponentContainer from './ComponentContainer.js'
 
-
 class SimpleRelay extends ComponentContainer {
 
   connectedCallback () {
