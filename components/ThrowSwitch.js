@@ -12,10 +12,14 @@ class ThrowSwitch extends SimpleSwitch {
     this.y2 = this.wire2.y1
   }
 
-  constructor (isClosed) {
+  constructor (isClosed = true) {
     super()
     this.isClosed = Boolean(isClosed)
   }
+
+  onGainMagnetise () { this.open() }
+
+  onLoseMagnetise () { this.close() }
 
   get isOpen () { return !this.isClosed }
 
@@ -23,8 +27,8 @@ class ThrowSwitch extends SimpleSwitch {
     if (!this.isOpen) {
       this.disconnect(this.wire2)
       this.isClosed = false
-      this.x2 += 20
-      this.y2 += 20
+      this.x2 -= 10
+      this.y2 += 15
     }
   }
 

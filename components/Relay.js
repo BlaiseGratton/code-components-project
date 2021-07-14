@@ -3,13 +3,15 @@ import ComponentContainer from './ComponentContainer.js'
 
 class SimpleRelay extends ComponentContainer {
 
+  switchComponent = 'simple-switch'
+
   connectedCallback () {
     super.connectedCallback()
 
     this.svg.setAttribute('width', 140)
     this.svg.setAttribute('height', 145)
 
-    const switch1 = document.createElement('simple-switch')
+    const switch1 = document.createElement(this.switchComponent)
     switch1.setAttribute('x1', 37)
     switch1.setAttribute('y1', 45)
     switch1.setAttribute('x2', 85)

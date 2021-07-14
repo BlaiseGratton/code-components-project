@@ -235,7 +235,9 @@ class ComponentContainer extends HTMLElement {
 
   connectSwitchesToCoil (coilComponent) {
     const switchesToConnect = this.querySelectorAll(`simple-switch#${coilComponent.attributes.for.value}`)
+    const throwSwitchesToConnect = this.querySelectorAll(`throw-switch#${coilComponent.attributes.for.value}`)
     switchesToConnect.forEach(switchComp => coilComponent.connectSwitch(switchComp))
+    throwSwitchesToConnect.forEach(switchComp => coilComponent.connectSwitch(switchComp))
   }
 }
 
