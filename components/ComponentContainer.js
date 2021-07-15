@@ -77,8 +77,8 @@ class ComponentContainer extends HTMLElement {
     wire.setAttribute('y1', capY + yOffset - 4)
     wire.setAttribute('x2', capX + xOffset - 4 - (xOffsets[direction] || 0))
     wire.setAttribute('y2', capY + yOffset - 4 - (yOffsets[direction] || 0))
-    wire.connect(endCap.parentComponent)
     this.appendChild(wire)
+    wire.connect(endCap.parentComponent)
     return wire
   }
 
@@ -169,6 +169,18 @@ class ComponentContainer extends HTMLElement {
 
     this.appendChild(NORGate)
     return NORGate
+  }
+
+  addNANDGate ({ x, y } = {}) {
+    const NANDGate = document.createElement('nand-gate')
+
+    if (x && y) {
+      NANDGate.setAttribute('x', x)
+      NANDGate.setAttribute('y', y)
+    }
+
+    this.appendChild(NANDGate)
+    return NANDGate
   }
 
   handleIntersections (movedEnd, xOffset, yOffset) {
