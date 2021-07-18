@@ -171,6 +171,18 @@ class ComponentContainer extends HTMLElement {
     return NORGate
   }
 
+  addXORGate ({ x, y } = {}) {
+    const XORGate = document.createElement('xor-gate')
+
+    if (x && y) {
+      XORGate.setAttribute('x', x)
+      XORGate.setAttribute('y', y)
+    }
+
+    this.appendChild(XORGate)
+    return XORGate
+  }
+
   addNANDGate ({ x, y } = {}) {
     const NANDGate = document.createElement('nand-gate')
 
