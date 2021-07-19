@@ -10,3 +10,5 @@ import SimpleRelay from './Relay.js'
 import InverterRelay from './InverterRelay.js'
 
 import * as gates from './gates/index.js'
+
+import * as adders from './adders/index.js'
