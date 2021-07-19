@@ -195,6 +195,18 @@ class ComponentContainer extends HTMLElement {
     return NANDGate
   }
 
+  addHalfAdder ({ x, y } = {}) {
+    const halfAdder = document.createElement('half-adder')
+
+    if (x && y) {
+      halfAdder.setAttribute('x', x)
+      halfAdder.setAttribute('y', y)
+    }
+
+    this.appendChild(halfAdder)
+    return halfAdder
+  }
+
   handleIntersections (movedEnd, xOffset, yOffset) {
     if (!this.svg.createSVGRect) return []
     const movedWire = movedEnd.parentComponent
