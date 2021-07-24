@@ -214,8 +214,8 @@ class ComponentContainer extends HTMLElement {
     const strokeWidth = movedWire.constructor.STROKE_WIDTH
     const svg = this.svg
     const mousePosition = svg.createSVGRect()
-    mousePosition.x = xOffset - circleCapRadius - (strokeWidth / 2)
-    mousePosition.y = yOffset - circleCapRadius - (strokeWidth / 2)
+    mousePosition.x = window.pageXOffset + xOffset - circleCapRadius - (strokeWidth / 2)
+    mousePosition.y = window.pageYOffset + yOffset - circleCapRadius - (strokeWidth / 2)
     mousePosition.width = circleCapRadius * 2 + strokeWidth
     mousePosition.height = circleCapRadius * 2 + strokeWidth
 

@@ -474,8 +474,8 @@ class WireSegment extends HTMLElement {
 
   redraw ({ currentTarget, clientX, clientY, ...ev }) {
     const movedEnd = currentTarget
-    const xOffset = clientX - this.xOffset
-    const yOffset = clientY - this.yOffset
+    const xOffset = window.pageXOffset + clientX - this.xOffset
+    const yOffset = window.pageYOffset + clientY - this.yOffset
 
     movedEnd.attributes.cx.value = xOffset
     movedEnd.attributes.cy.value = yOffset
