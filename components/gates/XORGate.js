@@ -5,8 +5,9 @@ class XORGate extends ComponentContainer {
   connectedCallback () {
     super.connectedCallback()
 
-    this.svg.setAttribute('width', 772)
-    this.svg.setAttribute('height', 900)
+    this.svg.setAttribute('width', 400)
+    this.svg.setAttribute('height', 500)
+    this.svg.setAttribute('viewBox', '0 0 772 900')
 
     const template = document.createElement('template') 
 

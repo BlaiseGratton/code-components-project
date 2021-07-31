@@ -5,8 +5,9 @@ class HalfAdder extends ComponentContainer {
   connectedCallback () {
     super.connectedCallback()
 
-    this.svg.setAttribute('width', 872)
-    this.svg.setAttribute('height', 1420)
+    this.svg.setAttribute('width', 200)
+    this.svg.setAttribute('height', 400)
+    this.svg.setAttribute('viewBox', '0 0 872 1420')
 
     const template = document.createElement('template') 
 

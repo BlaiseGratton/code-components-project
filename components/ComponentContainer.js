@@ -1,5 +1,9 @@
 class ComponentContainer extends HTMLElement {
 
+  setViewBox () {
+    this.svg.setAttribute('viewBox', `0 0 ${this.defaultWidth} ${this.defaultHeight}`)
+  }
+
   connectedCallback () {
 
     const {
@@ -7,15 +11,18 @@ class ComponentContainer extends HTMLElement {
       'height': heightAttribute,
       'x': xAttribute,
       'y': yAttribute,
+      'scale': scaleAttribute
     } = this.attributes
 
-    const width = widthAttribute ? widthAttribute.value : 200
-    const height = heightAttribute ? heightAttribute.value : 200
+    const scale = parseFloat(scaleAttribute && scaleAttribute.value) || 1
+    const width = (widthAttribute ? widthAttribute.value : this.defaultWidth) * scale
+    const height = (heightAttribute ? heightAttribute.value : this.defaultHeight) * scale
     const xOffset = xAttribute ? parseInt(xAttribute.value) : 0
     const yOffset = yAttribute ? parseInt(yAttribute.value) : 0
 
     this.noUI = Boolean(this.attributes['no-ui']) // for skipping checking SVG overlaps
 
+    this.scale = scale
     this.style.position = 'absolute'
     this.style.left = `${xOffset}px`
     this.style.top = `${yOffset}px`
@@ -35,9 +42,9 @@ class ComponentContainer extends HTMLElement {
       'xmlns:xlink',
       'http://www.w3.org/1999/xlink'
     )
+
     svg.setAttribute('width', width)
     svg.setAttribute('height', height)
-    svg.setAttribute('viewbox', `0 0 ${width} ${height}`)
 
     this.appendChild(style)
     this.appendChild(svg)
@@ -56,9 +63,18 @@ class ComponentContainer extends HTMLElement {
     elements.forEach(element => this.svg.removeChild(element))
   }
 
+  getAspectRatio = (containerComponent) => {
+    const viewBoxWidth = containerComponent.defaultWidth
+    const relativeWidth = containerComponent.svg.width.baseVal.value
+    const ratio = relativeWidth / viewBoxWidth
+    return ratio
+  }
+
   exposeWireCap (endCap, direction) {
-    const xOffset = parseInt(endCap.parentComponent.parentElement.style.left)
-    const yOffset = parseInt(endCap.parentComponent.parentElement.style.top)
+    const wireEnd = endCap.parentComponent
+    const container = wireEnd.parentElement
+    const xOffset = parseInt(endCap.parentComponent.parentElement.style.left) / this.scale
+    const yOffset = parseInt(endCap.parentComponent.parentElement.style.top) / this.scale
     const yOffsets = { up: 25, down: -25 }
     const xOffsets = { left: 25, right: -25 }
     const wire = document.createElement('wire-segment')

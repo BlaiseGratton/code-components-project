@@ -6,11 +6,12 @@ import WireSegment from '../WireSegment.js'
 
 class NORGate extends ComponentContainer {
 
+  defaultWidth = 200
+  defaultHeight = 400
+
   connectedCallback () {
     super.connectedCallback()
-
-    this.svg.setAttribute('width', 200)
-    this.svg.setAttribute('height', 400)
+    this.setViewBox()
 
     const power = document.createElement('power-source')
     this.appendChild(power)
@@ -19,8 +20,9 @@ class NORGate extends ComponentContainer {
     this.power = power
 
     const relay1 = document.createElement('inverter-relay')
-    relay1.setAttribute('x', 30)
-    relay1.setAttribute('y', 70)
+    relay1.setAttribute('x', 30 * this.scale)
+    relay1.setAttribute('y', 70 * this.scale)
+    relay1.setAttribute('scale', this.scale)
     this.appendChild(relay1)
     relay1.outerWire3.x2 = 2
     relay1.outerWire3.noDisconnect = true
@@ -29,8 +31,9 @@ class NORGate extends ComponentContainer {
     this.relay1 = relay1
 
     const relay2 = document.createElement('inverter-relay')
-    relay2.setAttribute('x', 30)
-    relay2.setAttribute('y', 250)
+    relay2.setAttribute('x', 30 * this.scale)
+    relay2.setAttribute('y', 250 * this.scale)
+    relay2.setAttribute('scale', this.scale)
     this.appendChild(relay2)
     relay2.outerWire3.x2 = 2
     relay2.outerWire2.noDisconnect = true

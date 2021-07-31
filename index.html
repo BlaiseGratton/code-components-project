@@ -4,20 +4,16 @@
   <meta charset="UTF-8">
 </head>
 <body>
-  <component-container width="2300" height="1900">
-    <half-adder x="1050" y="50"></half-adder>
-    <half-adder x="75" y="428"></half-adder>
-    <or-gate x="2050" y="1100"></or-gate>
-    <wire-segment x1="0" y1="907" x2="50" y2="907"></wire-segment>
-    <wire-segment x1="0" y1="1397" x2="50" y2="1397"></wire-segment>
-    <wire-segment x1="0" y1="139" x2="950" y2="300"></wire-segment>
-    <wire-segment x1="950" y1="300" x2="1025" y2="529"></wire-segment>
-    <wire-segment x1="965" y1="1019" x2="1025" y2="1019"></wire-segment>
-    <wire-segment x1="965" y1="1578" x2="1925" y2="1540"></wire-segment>
-    <wire-segment x1="1925" y1="1540" x2="2022" y2="1421"></wire-segment>
-    <wire-segment x1="1939" y1="1200" x2="2021" y2="1213"></wire-segment>
-    <wire-segment x1="2264" y1="1326" x2="2292" y2="1326"></wire-segment>
-    <wire-segment x1="1939" y1="640" x2="2292" y2="640"></wire-segment>
+  <component-container width="2500" height="1950">
+    <power-source></power-source>
+    <simple-relay x="100" y="100" scale=".5"></simple-relay>
+    <or-gate x="50" y="300"></or-gate>
+    <nor-gate x="300" y="300" scale=".95"></nor-gate>
+    <and-gate x="550" y="300" scale=".75"></and-gate>
+    <nand-gate x="800" y="300" scale=".5"></nand-gate>
+    <!--full-adder x="50" y="25"></full-adder>
+    <power-source y="800"></power-source>
+    <power-source y="1300"></power-source-->
   </component-container>
   <script type="module" src="./components/index.js"></script>
 </body>
