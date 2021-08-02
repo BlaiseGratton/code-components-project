@@ -11,7 +11,6 @@ class NANDGate extends ComponentContainer {
 
   connectedCallback () {
     super.connectedCallback()
-    this.setViewBox()
 
     const power1 = document.createElement('power-source')
     this.appendChild(power1)

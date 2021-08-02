@@ -11,7 +11,6 @@ class NORGate extends ComponentContainer {
 
   connectedCallback () {
     super.connectedCallback()
-    this.setViewBox()
 
     const power = document.createElement('power-source')
     this.appendChild(power)

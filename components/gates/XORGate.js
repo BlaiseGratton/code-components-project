@@ -2,12 +2,11 @@ import ComponentContainer from '../ComponentContainer.js'
 
 class XORGate extends ComponentContainer {
 
+  defaultWidth = 772
+  defaultHeight = 900
+
   connectedCallback () {
     super.connectedCallback()
-
-    this.svg.setAttribute('width', 400)
-    this.svg.setAttribute('height', 500)
-    this.svg.setAttribute('viewBox', '0 0 772 900')
 
     const template = document.createElement('template') 
 
@@ -20,11 +19,11 @@ class XORGate extends ComponentContainer {
       <wire-segment x1="130" y1="687" x2="223" y2="332" id="input-2-to-OR"></wire-segment>
       <wire-segment x1="130" y1="687" x2="223" y2="810" id="input-2-to-NAND"></wire-segment>
 
-      <or-gate x="250" y="10"></or-gate>
-      <nand-gate x="250" y="490"></nand-gate>
+      <or-gate x="${250 * this.scale}" y="${10 * this.scale}" scale="${this.scale}"></or-gate>
+      <nand-gate x="${250 * this.scale}" y="${490 * this.scale}" scale="${this.scale}"></nand-gate>
       <wire-segment x1="465" y1="237" x2="522" y2="394" id="or-connector"></wire-segment>
       <wire-segment x1="465" y1="714" x2="524" y2="571" id="nand-connector"></wire-segment>
-      <and-gate x="550" y="250"></and-gate>
+      <and-gate x="${550 * this.scale}" y="${250 * this.scale}" scale="${this.scale}"></and-gate>
     `
     this.appendChild(template.content)
 

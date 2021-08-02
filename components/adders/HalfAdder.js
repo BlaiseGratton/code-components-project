@@ -2,12 +2,11 @@ import ComponentContainer from '../ComponentContainer.js'
 
 class HalfAdder extends ComponentContainer {
 
+  defaultWidth = 872
+  defaultHeight = 1420
+
   connectedCallback () {
     super.connectedCallback()
-
-    this.svg.setAttribute('width', 200)
-    this.svg.setAttribute('height', 400)
-    this.svg.setAttribute('viewBox', '0 0 872 1420')
 
     const template = document.createElement('template') 
 
@@ -22,8 +21,8 @@ class HalfAdder extends ComponentContainer {
       <wire-segment x1="18" y1="969" x2="51" y2="1300" id="input-2-to-and_1"></wire-segment>
       <wire-segment x1="51" y1="1300" x2="298" y2="1323" id="input-2-to-and_2"></wire-segment>
 
-      <xor-gate x="75" y="50" id="xor-gate"></xor-gate>
-      <and-gate x="325" y="1000" id="and-gate"></and-gate>
+      <xor-gate x="${75 * this.scale}" y="${50 * this.scale}" scale="${this.scale}"id="xor-gate"></xor-gate>
+      <and-gate x="${325 * this.scale}" y="${1000 * this.scale}" scale="${this.scale}" id="and-gate"></and-gate>
       <wire-segment x1="540" y1="1290" x2="864" y2="1150" id="carry-out"></wire-segment>
     `
     this.appendChild(template.content)

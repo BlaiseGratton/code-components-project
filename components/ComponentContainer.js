@@ -1,7 +1,7 @@
 class ComponentContainer extends HTMLElement {
 
-  setViewBox () {
-    this.svg.setAttribute('viewBox', `0 0 ${this.defaultWidth} ${this.defaultHeight}`)
+  setViewBox (width, height) {
+    this.svg.setAttribute('viewBox', `0 0 ${this.defaultWidth || width} ${this.defaultHeight || height}`)
   }
 
   connectedCallback () {
@@ -49,6 +49,7 @@ class ComponentContainer extends HTMLElement {
     this.appendChild(style)
     this.appendChild(svg)
     this._svg = svg
+    this.setViewBox(width, height)
   }
 
   get svg () {
@@ -72,9 +73,10 @@ class ComponentContainer extends HTMLElement {
 
   exposeWireCap (endCap, direction) {
     const wireEnd = endCap.parentComponent
-    const container = wireEnd.parentElement
-    const xOffset = parseInt(endCap.parentComponent.parentElement.style.left) / this.scale
-    const yOffset = parseInt(endCap.parentComponent.parentElement.style.top) / this.scale
+    const component = wireEnd.parentElement
+    const container = component.parentElement
+    const xOffset = parseInt(component.style.left) / container.scale
+    const yOffset = parseInt(component.style.top) / container.scale
     const yOffsets = { up: 25, down: -25 }
     const xOffsets = { left: 25, right: -25 }
     const wire = document.createElement('wire-segment')
@@ -82,17 +84,19 @@ class ComponentContainer extends HTMLElement {
     let capX, capY
 
     if (typeof process === 'undefined') {
-      capX = endCap.cx.baseVal.value
-      capY = endCap.cy.baseVal.value
+      capX = endCap.cx.baseVal.value * component.scale / container.scale
+      capY = endCap.cy.baseVal.value * component.scale / container.scale
     } else {
       // in a testing context here
       capX = endCap.parentComponent.x1
       capY = endCap.parentComponent.y1
     }
-    wire.setAttribute('x1', capX + xOffset - 4)
-    wire.setAttribute('y1', capY + yOffset - 4)
-    wire.setAttribute('x2', capX + xOffset - 4 - (xOffsets[direction] || 0))
-    wire.setAttribute('y2', capY + yOffset - 4 - (yOffsets[direction] || 0))
+
+    const endcapOffset = 4
+    wire.setAttribute('x1', capX + xOffset - endcapOffset)
+    wire.setAttribute('y1', capY + yOffset - endcapOffset)
+    wire.setAttribute('x2', capX + xOffset - endcapOffset - (xOffsets[direction] || 0))
+    wire.setAttribute('y2', capY + yOffset - endcapOffset - (yOffsets[direction] || 0))
     this.appendChild(wire)
     wire.connect(endCap.parentComponent)
     return wire

@@ -10,6 +10,11 @@ class SimpleRelay extends ComponentContainer {
     super.connectedCallback()
     this.setViewBox()
 
+    const ground = document.createElement('ground-connection')
+    ground.setAttribute('x', -15)
+    ground.setAttribute('y', 18)
+    this.appendChild(ground)
+
     const switch1 = document.createElement(this.switchComponent)
     switch1.setAttribute('x1', 37)
     switch1.setAttribute('y1', 45)
@@ -69,10 +74,6 @@ class SimpleRelay extends ComponentContainer {
     this.appendChild(wire4)
     wire4.connect(wireCoil)
 
-    const ground = document.createElement('ground-connection')
-    ground.setAttribute('x', -15)
-    ground.setAttribute('y', 18)
-    this.appendChild(ground)
     ground.connect(wire4)
   }
 
