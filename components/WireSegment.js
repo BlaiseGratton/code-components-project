@@ -300,15 +300,16 @@ class WireSegment extends HTMLElement {
   get end1 () { return this._end1 }
   get end2 () { return this._end2 }
 
-  get xOffset () {
-    // need to make these recursive, ooooh weee
-    const offset = parseInt(this.parentElement.style.left)
-    return offset //+ this.parentElement.xOffset || 0
+  get parentXOffset () {
+    const xValue = this.parentElement.attributes.x
+    const offset = (parseInt(xValue && xValue.value) || 0)
+    return offset + (this.parentElement && this.parentElement.parentXOffset || 0)
   }
 
-  get yOffset () {
-    const offset = parseInt(this.parentElement.style.top)
-    return offset //+ this.parentElement.yOffset || 0
+  get parentYOffset () {
+    const yValue = this.parentElement.attributes.y
+    const offset = (parseInt(yValue && yValue.value) || 0)
+    return offset + (this.parentElement && this.parentElement.parentYOffset || 0)
   }
 
   set svgViewWidth (value) {
@@ -474,11 +475,11 @@ class WireSegment extends HTMLElement {
 
   redraw ({ currentTarget, clientX, clientY, ...ev }) {
     const movedEnd = currentTarget
-    const xOffset = window.pageXOffset + clientX - this.xOffset
-    const yOffset = window.pageYOffset + clientY - this.yOffset
+    const xOffset = window.pageXOffset + clientX - this.parentXOffset
+    const yOffset = window.pageYOffset + clientY - this.parentYOffset
 
-    movedEnd.attributes.cx.value = xOffset
-    movedEnd.attributes.cy.value = yOffset
+    movedEnd.attributes.cx.value = xOffset / this.parentElement.scale // + this.parentXOffset
+    movedEnd.attributes.cy.value = yOffset / this.parentElement.scale //+ this.parentYOffset
 
     if (this.end1 === movedEnd) {
       this.x1 = +movedEnd.attributes.cx.value

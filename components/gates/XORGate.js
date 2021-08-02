@@ -11,11 +11,11 @@ class XORGate extends ComponentContainer {
     const template = document.createElement('template') 
 
     template.innerHTML = `
-      <wire-segment x1="1" y1="217" x2="130" y2="217" id="input-1"></wire-segment>
+      <wire-segment x1="1" y1="217" x2="130" y2="217" id="xor-input-1"></wire-segment>
       <wire-segment x1="130" y1="217" x2="223" y2="121" id="input-1-to-OR"></wire-segment>
       <wire-segment x1="130" y1="217" x2="223" y2="600" id="input-1-to-NAND"></wire-segment>
 
-      <wire-segment x1="1" y1="687" x2="130" y2="687" id="input-2"></wire-segment>
+      <wire-segment x1="1" y1="687" x2="130" y2="687" id="xor-input-2"></wire-segment>
       <wire-segment x1="130" y1="687" x2="223" y2="332" id="input-2-to-OR"></wire-segment>
       <wire-segment x1="130" y1="687" x2="223" y2="810" id="input-2-to-NAND"></wire-segment>
 
@@ -31,8 +31,8 @@ class XORGate extends ComponentContainer {
     this.NANDGate = this.querySelector('nand-gate')
     this.ANDGate = this.querySelector('and-gate')
 
-    const inputWire1 = this.querySelector('#input-1')
-    const inputWire2 = this.querySelector('#input-2')
+    const inputWire1 = this.querySelector('#xor-input-1')
+    const inputWire2 = this.querySelector('#xor-input-2')
     const outputWire = this.ANDGate.outputWire
 
     const input1ToOR = this.querySelector('#input-1-to-OR')

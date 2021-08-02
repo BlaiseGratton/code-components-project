@@ -227,6 +227,18 @@ class ComponentContainer extends HTMLElement {
     return halfAdder
   }
 
+  get parentXOffset () {
+    const xValue = this.parentElement.attributes.x
+    const offset = (parseInt(xValue && xValue.value) || 0)
+    return offset + (this.parentElement && this.parentElement.parentXOffset || 0)
+  }
+
+  get parentYOffset () {
+    const yValue = this.parentElement.attributes.y
+    const offset = (parseInt(yValue && yValue.value) || 0)
+    return offset + (this.parentElement && this.parentElement.parentYOffset || 0)
+  }
+
   handleIntersections (movedEnd, xOffset, yOffset) {
     if (!this.svg.createSVGRect) return []
     const movedWire = movedEnd.parentComponent
@@ -239,7 +251,7 @@ class ComponentContainer extends HTMLElement {
     mousePosition.width = circleCapRadius * 2 + strokeWidth
     mousePosition.height = circleCapRadius * 2 + strokeWidth
 
-    if (false) { // for visually debugging overlap checks
+    if (movedWire.id === 'xor-input-1') { // for visually debugging overlap checks
       const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
       rect.setAttribute('x', mousePosition.x)
       rect.setAttribute('y', mousePosition.y)

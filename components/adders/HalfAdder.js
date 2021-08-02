@@ -21,7 +21,7 @@ class HalfAdder extends ComponentContainer {
       <wire-segment x1="18" y1="969" x2="51" y2="1300" id="input-2-to-and_1"></wire-segment>
       <wire-segment x1="51" y1="1300" x2="298" y2="1323" id="input-2-to-and_2"></wire-segment>
 
-      <xor-gate x="${75 * this.scale}" y="${50 * this.scale}" scale="${this.scale}"id="xor-gate"></xor-gate>
+      <xor-gate x="${75 * this.scale}" y="${50 * this.scale}" scale="${this.scale}" id="xor-gate"></xor-gate>
       <and-gate x="${325 * this.scale}" y="${1000 * this.scale}" scale="${this.scale}" id="and-gate"></and-gate>
       <wire-segment x1="540" y1="1290" x2="864" y2="1150" id="carry-out"></wire-segment>
     `
