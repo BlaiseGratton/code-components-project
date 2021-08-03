@@ -246,12 +246,12 @@ class ComponentContainer extends HTMLElement {
     const strokeWidth = movedWire.constructor.STROKE_WIDTH
     const svg = this.svg
     const mousePosition = svg.createSVGRect()
-    mousePosition.x = window.pageXOffset + xOffset - circleCapRadius - (strokeWidth / 2)
-    mousePosition.y = window.pageYOffset + yOffset - circleCapRadius - (strokeWidth / 2)
-    mousePosition.width = circleCapRadius * 2 + strokeWidth
-    mousePosition.height = circleCapRadius * 2 + strokeWidth
+    mousePosition.x = window.pageXOffset + xOffset - (strokeWidth / 2) - circleCapRadius
+    mousePosition.y = window.pageYOffset + yOffset - (strokeWidth / 2) - circleCapRadius
+    mousePosition.width = (circleCapRadius * 2 + strokeWidth) * this.scale * 1.25
+    mousePosition.height = (circleCapRadius * 2 + strokeWidth) * this.scale * 1.25
 
-    if (movedWire.id === 'xor-input-1') { // for visually debugging overlap checks
+    if (false) { // for visually debugging overlap checks
       const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
       rect.setAttribute('x', mousePosition.x)
       rect.setAttribute('y', mousePosition.y)
