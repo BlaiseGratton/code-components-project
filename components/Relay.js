@@ -3,12 +3,17 @@ import ComponentContainer from './ComponentContainer.js'
 class SimpleRelay extends ComponentContainer {
 
   switchComponent = 'simple-switch'
+  defaultWidth = 140
+  defaultHeight = 145
 
   connectedCallback () {
     super.connectedCallback()
+    this.setViewBox()
 
-    this.svg.setAttribute('width', 140)
-    this.svg.setAttribute('height', 145)
+    const ground = document.createElement('ground-connection')
+    ground.setAttribute('x', -15)
+    ground.setAttribute('y', 18)
+    this.appendChild(ground)
 
     const switch1 = document.createElement(this.switchComponent)
     switch1.setAttribute('x1', 37)
@@ -69,10 +74,6 @@ class SimpleRelay extends ComponentContainer {
     this.appendChild(wire4)
     wire4.connect(wireCoil)
 
-    const ground = document.createElement('ground-connection')
-    ground.setAttribute('x', -15)
-    ground.setAttribute('y', 18)
-    this.appendChild(ground)
     ground.connect(wire4)
   }
 

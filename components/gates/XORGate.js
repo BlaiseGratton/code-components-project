@@ -2,28 +2,28 @@ import ComponentContainer from '../ComponentContainer.js'
 
 class XORGate extends ComponentContainer {
 
+  defaultWidth = 772
+  defaultHeight = 900
+
   connectedCallback () {
     super.connectedCallback()
-
-    this.svg.setAttribute('width', 772)
-    this.svg.setAttribute('height', 900)
 
     const template = document.createElement('template') 
 
     template.innerHTML = `
-      <wire-segment x1="1" y1="217" x2="130" y2="217" id="input-1"></wire-segment>
+      <wire-segment x1="1" y1="217" x2="130" y2="217" id="xor-input-1"></wire-segment>
       <wire-segment x1="130" y1="217" x2="223" y2="121" id="input-1-to-OR"></wire-segment>
       <wire-segment x1="130" y1="217" x2="223" y2="600" id="input-1-to-NAND"></wire-segment>
 
-      <wire-segment x1="1" y1="687" x2="130" y2="687" id="input-2"></wire-segment>
+      <wire-segment x1="1" y1="687" x2="130" y2="687" id="xor-input-2"></wire-segment>
       <wire-segment x1="130" y1="687" x2="223" y2="332" id="input-2-to-OR"></wire-segment>
       <wire-segment x1="130" y1="687" x2="223" y2="810" id="input-2-to-NAND"></wire-segment>
 
-      <or-gate x="250" y="10"></or-gate>
-      <nand-gate x="250" y="490"></nand-gate>
+      <or-gate x="${250 * this.scale}" y="${10 * this.scale}" scale="${this.scale}"></or-gate>
+      <nand-gate x="${250 * this.scale}" y="${490 * this.scale}" scale="${this.scale}"></nand-gate>
       <wire-segment x1="465" y1="237" x2="522" y2="394" id="or-connector"></wire-segment>
       <wire-segment x1="465" y1="714" x2="524" y2="571" id="nand-connector"></wire-segment>
-      <and-gate x="550" y="250"></and-gate>
+      <and-gate x="${550 * this.scale}" y="${250 * this.scale}" scale="${this.scale}"></and-gate>
     `
     this.appendChild(template.content)
 
@@ -31,8 +31,8 @@ class XORGate extends ComponentContainer {
     this.NANDGate = this.querySelector('nand-gate')
     this.ANDGate = this.querySelector('and-gate')
 
-    const inputWire1 = this.querySelector('#input-1')
-    const inputWire2 = this.querySelector('#input-2')
+    const inputWire1 = this.querySelector('#xor-input-1')
+    const inputWire2 = this.querySelector('#xor-input-2')
     const outputWire = this.ANDGate.outputWire
 
     const input1ToOR = this.querySelector('#input-1-to-OR')

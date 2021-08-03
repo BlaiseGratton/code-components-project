@@ -1,5 +1,9 @@
 class ComponentContainer extends HTMLElement {
 
+  setViewBox (width, height) {
+    this.svg.setAttribute('viewBox', `0 0 ${this.defaultWidth || width} ${this.defaultHeight || height}`)
+  }
+
   connectedCallback () {
 
     const {
@@ -7,15 +11,18 @@ class ComponentContainer extends HTMLElement {
       'height': heightAttribute,
       'x': xAttribute,
       'y': yAttribute,
+      'scale': scaleAttribute
     } = this.attributes
 
-    const width = widthAttribute ? widthAttribute.value : 200
-    const height = heightAttribute ? heightAttribute.value : 200
+    const scale = parseFloat(scaleAttribute && scaleAttribute.value) || 1
+    const width = (widthAttribute ? widthAttribute.value : this.defaultWidth) * scale
+    const height = (heightAttribute ? heightAttribute.value : this.defaultHeight) * scale
     const xOffset = xAttribute ? parseInt(xAttribute.value) : 0
     const yOffset = yAttribute ? parseInt(yAttribute.value) : 0
 
     this.noUI = Boolean(this.attributes['no-ui']) // for skipping checking SVG overlaps
 
+    this.scale = scale
     this.style.position = 'absolute'
     this.style.left = `${xOffset}px`
     this.style.top = `${yOffset}px`
@@ -35,13 +42,14 @@ class ComponentContainer extends HTMLElement {
       'xmlns:xlink',
       'http://www.w3.org/1999/xlink'
     )
+
     svg.setAttribute('width', width)
     svg.setAttribute('height', height)
-    svg.setAttribute('viewbox', `0 0 ${width} ${height}`)
 
     this.appendChild(style)
     this.appendChild(svg)
     this._svg = svg
+    this.setViewBox(width, height)
   }
 
   get svg () {
@@ -56,9 +64,19 @@ class ComponentContainer extends HTMLElement {
     elements.forEach(element => this.svg.removeChild(element))
   }
 
+  getAspectRatio = (containerComponent) => {
+    const viewBoxWidth = containerComponent.defaultWidth
+    const relativeWidth = containerComponent.svg.width.baseVal.value
+    const ratio = relativeWidth / viewBoxWidth
+    return ratio
+  }
+
   exposeWireCap (endCap, direction) {
-    const xOffset = parseInt(endCap.parentComponent.parentElement.style.left)
-    const yOffset = parseInt(endCap.parentComponent.parentElement.style.top)
+    const wireEnd = endCap.parentComponent
+    const component = wireEnd.parentElement
+    const container = component.parentElement
+    const xOffset = parseInt(component.style.left) / container.scale
+    const yOffset = parseInt(component.style.top) / container.scale
     const yOffsets = { up: 25, down: -25 }
     const xOffsets = { left: 25, right: -25 }
     const wire = document.createElement('wire-segment')
@@ -66,17 +84,19 @@ class ComponentContainer extends HTMLElement {
     let capX, capY
 
     if (typeof process === 'undefined') {
-      capX = endCap.cx.baseVal.value
-      capY = endCap.cy.baseVal.value
+      capX = endCap.cx.baseVal.value * component.scale / container.scale
+      capY = endCap.cy.baseVal.value * component.scale / container.scale
     } else {
       // in a testing context here
       capX = endCap.parentComponent.x1
       capY = endCap.parentComponent.y1
     }
-    wire.setAttribute('x1', capX + xOffset - 4)
-    wire.setAttribute('y1', capY + yOffset - 4)
-    wire.setAttribute('x2', capX + xOffset - 4 - (xOffsets[direction] || 0))
-    wire.setAttribute('y2', capY + yOffset - 4 - (yOffsets[direction] || 0))
+
+    const endcapOffset = 4
+    wire.setAttribute('x1', capX + xOffset - endcapOffset)
+    wire.setAttribute('y1', capY + yOffset - endcapOffset)
+    wire.setAttribute('x2', capX + xOffset - endcapOffset - (xOffsets[direction] || 0))
+    wire.setAttribute('y2', capY + yOffset - endcapOffset - (yOffsets[direction] || 0))
     this.appendChild(wire)
     wire.connect(endCap.parentComponent)
     return wire
@@ -207,6 +227,18 @@ class ComponentContainer extends HTMLElement {
     return halfAdder
   }
 
+  get parentXOffset () {
+    const xValue = this.parentElement.attributes.x
+    const offset = (parseInt(xValue && xValue.value) || 0)
+    return offset + (this.parentElement && this.parentElement.parentXOffset || 0)
+  }
+
+  get parentYOffset () {
+    const yValue = this.parentElement.attributes.y
+    const offset = (parseInt(yValue && yValue.value) || 0)
+    return offset + (this.parentElement && this.parentElement.parentYOffset || 0)
+  }
+
   handleIntersections (movedEnd, xOffset, yOffset) {
     if (!this.svg.createSVGRect) return []
     const movedWire = movedEnd.parentComponent
@@ -214,10 +246,10 @@ class ComponentContainer extends HTMLElement {
     const strokeWidth = movedWire.constructor.STROKE_WIDTH
     const svg = this.svg
     const mousePosition = svg.createSVGRect()
-    mousePosition.x = window.pageXOffset + xOffset - circleCapRadius - (strokeWidth / 2)
-    mousePosition.y = window.pageYOffset + yOffset - circleCapRadius - (strokeWidth / 2)
-    mousePosition.width = circleCapRadius * 2 + strokeWidth
-    mousePosition.height = circleCapRadius * 2 + strokeWidth
+    mousePosition.x = window.pageXOffset + xOffset - (strokeWidth / 2) - circleCapRadius
+    mousePosition.y = window.pageYOffset + yOffset - (strokeWidth / 2) - circleCapRadius
+    mousePosition.width = (circleCapRadius * 2 + strokeWidth) * this.scale * 1.25
+    mousePosition.height = (circleCapRadius * 2 + strokeWidth) * this.scale * 1.25
 
     if (false) { // for visually debugging overlap checks
       const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
