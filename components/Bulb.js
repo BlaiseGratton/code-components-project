@@ -15,6 +15,7 @@ class Bulb extends WireSegment {
 
     if (this.parentElement) {
       this.path1 && this.path1.setAttribute('stroke', this.isLit ? 'orange' : 'grey')
+      this.onCurrentChange && this.onCurrentChange(this)
     }
   }
 
