@@ -4,6 +4,26 @@ class ComponentContainer extends HTMLElement {
     this.svg.setAttribute('viewBox', `0 0 ${this.defaultWidth || width} ${this.defaultHeight || height}`)
   }
 
+  toRepresentation () {
+    const representations = []
+
+    for (const component of this.children) {
+      const tagName = component.tagName.toLowerCase()
+      if (['style', 'svg'].includes(tagName)) continue
+
+      const result = component.toRepresentation()
+      representations.push(result)
+    }
+
+    return `<component-container width="${this.svg.width.baseVal.value}" height="${this.svg.height.baseVal.value}">${representations.join('')}</component-container>`
+  }
+
+  loadRepresentation (representation) {
+    const template = document.createElement('template')
+    template.innerHTML = representation
+    this.appendChild(template.content)
+  }
+
   connectedCallback () {
 
     const {

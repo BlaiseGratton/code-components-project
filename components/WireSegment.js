@@ -11,6 +11,8 @@ class WireSegment extends HTMLElement {
     container.attachSVGElement(this.end2)
   }
 
+  toRepresentation () {}
+
   connectedCallback () {
     if (typeof process !== 'undefined' && !this.id) {
       this.id = `wire-segment-${this.testId}`
