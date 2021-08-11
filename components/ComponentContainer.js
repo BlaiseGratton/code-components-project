@@ -5,17 +5,24 @@ class ComponentContainer extends HTMLElement {
   }
 
   toRepresentation () {
-    const representations = []
+    if (this.tagName === 'COMPONENT-CONTAINER') {
+      const representations = []
 
-    for (const component of this.children) {
-      const tagName = component.tagName.toLowerCase()
-      if (['style', 'svg'].includes(tagName)) continue
+      for (const component of this.children) {
+        const tagName = component.tagName.toLowerCase()
+        if (['style', 'svg'].includes(tagName)) continue
 
-      const result = component.toRepresentation()
-      representations.push(result)
+        const result = component.toRepresentation()
+        representations.push(result)
+      }
+
+      return `<component-container width="${this.svg.width.baseVal.value}" height="${this.svg.height.baseVal.value}">${representations.join('')}</component-container>`
+    } else {
+      const tagName = this.tagName.toLowerCase()
+      const extras = this.extraProps || ''
+
+      return `<${tagName} x="${this.attributes.x.value}" y="${this.attributes.y.value}" scale="${this.scale}" ${extras}></${tagName}>`
     }
-
-    return `<component-container width="${this.svg.width.baseVal.value}" height="${this.svg.height.baseVal.value}">${representations.join('')}</component-container>`
   }
 
   loadRepresentation (representation) {
@@ -119,6 +126,7 @@ class ComponentContainer extends HTMLElement {
     wire.setAttribute('y2', capY + yOffset - endcapOffset - (yOffsets[direction] || 0))
     this.appendChild(wire)
     wire.connect(endCap.parentComponent)
+    wire.isExposed = true
     return wire
   }
 

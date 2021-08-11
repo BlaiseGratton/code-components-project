@@ -67,6 +67,7 @@ class PowerSource extends HTMLElement {
 
   addWireSegment ({ x2 = 22, y2 = 80 } = {}) {
     const segment = document.createElement('wire-segment')
+    segment.isSetByComponent = true
     this.parentElement.appendChild(segment)
     segment.x1 = 22 + this.xOffset
     segment.x2 = x2 + this.xOffset

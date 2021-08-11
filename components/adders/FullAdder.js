@@ -5,10 +5,6 @@ class FullAdder extends ComponentContainer {
   defaultWidth = 2300
   defaultHeight = 1900
 
-  toRepresentation () {
-    return `<full-adder x="${this.attributes.x.value}" y="${this.attributes.y.value}" scale="${this.scale}"></full-adder>`
-  }
-
   connectedCallback () {
     super.connectedCallback()
 

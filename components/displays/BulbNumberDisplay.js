@@ -5,6 +5,10 @@ class BulbNumberDisplay extends ComponentContainer {
   defaultWidth = 100 
   defaultHeight = 80
 
+  get extraProps () {
+    return `bits="${this.bits}"`
+  }
+
   onCurrentChange () {
     const bitString = this.bulbs.map(bulb => bulb.isLit ? '1' : '0').reverse().join('')
     this.value = parseInt(bitString, 2)
@@ -24,6 +28,7 @@ class BulbNumberDisplay extends ComponentContainer {
     super.connectedCallback()
 
     const bits = parseInt(this.attributes.bits && this.attributes.bits.value) || 1
+    this.bits = bits
     this.defaultHeight *= bits
     this.setViewBox()
     this.svg.setAttribute('height', this.defaultHeight)
