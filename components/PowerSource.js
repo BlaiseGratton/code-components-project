@@ -2,6 +2,14 @@ class PowerSource extends HTMLElement {
 
   get ALWAYS_POWERED () { return { isPowered: true } }
 
+  toRepresentation () {
+    const xOffset = this.xOffset ? `x="${this.xOffset}"`: ''
+    const yOffset = this.yOffset ? `y="${this.yOffset}"`: ''
+    const wireX = this.wire ? `x2="${this.wire.end2.cx.baseVal.value}"` : ''
+    const wireY = this.wire ? `y2="${this.wire.end2.cy.baseVal.value}"` : ''
+    return `<power-source ${xOffset} ${yOffset} ${wireX} ${wireY}></power-source>`
+  }
+
   connectedCallback () {
     if (typeof process !== 'undefined' && !this.id) {
       this.id = `power-source-${this.testId}`
@@ -9,7 +17,7 @@ class PowerSource extends HTMLElement {
     this.style.display = 'contents'
     this.style.position = 'absolute'
 
-    let { 'x': xOffset, 'y': yOffset } = this.attributes
+    let { 'x': xOffset, 'y': yOffset, 'x2': wireEndX, 'y2': wireEndY } = this.attributes
     this.xOffset = xOffset ? parseInt(xOffset.value) : 0
     this.yOffset = yOffset ? parseInt(yOffset.value) : 0
 
@@ -35,6 +43,8 @@ class PowerSource extends HTMLElement {
     }
 
     this.wire = this.addWireSegment()
+    if (wireEndX) this.wire.x2 = wireEndX.value
+    if (wireEndY) this.wire.y2 = wireEndY.value
   }
 
   toJSON () {
@@ -57,6 +67,7 @@ class PowerSource extends HTMLElement {
 
   addWireSegment ({ x2 = 22, y2 = 80 } = {}) {
     const segment = document.createElement('wire-segment')
+    segment.isSetByComponent = true
     this.parentElement.appendChild(segment)
     segment.x1 = 22 + this.xOffset
     segment.x2 = x2 + this.xOffset

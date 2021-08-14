@@ -11,6 +11,13 @@ class WireSegment extends HTMLElement {
     container.attachSVGElement(this.end2)
   }
 
+  toRepresentation () {
+    if (this.isExposed || this.isSetByComponent) return ''
+    const gap = this.constructor.CIRCLE_CAP_RADIUS
+
+    return `<wire-segment x1="${parseInt(this.x1) - gap}" y1="${parseInt(this.y1) - gap}" x2="${parseInt(this.x2) - gap}" y2="${parseInt(this.y2) - gap}"></wire-segment>`
+  }
+
   connectedCallback () {
     if (typeof process !== 'undefined' && !this.id) {
       this.id = `wire-segment-${this.testId}`
@@ -92,6 +99,7 @@ class WireSegment extends HTMLElement {
         })
 
         cap.addEventListener('mousemove', function (ev) {
+          if (self.isExposed) return
           if (self.isDraggingCircle) {
             self.redraw(ev)
           }
@@ -192,7 +200,7 @@ class WireSegment extends HTMLElement {
   }
 
   get parentSVG () {
-    return this.parentElement ? this.parentElement.querySelector('svg') : null
+    return this.parentElement ? this.parentElement.svg : null
   }
 
   get x1 () { return this._x1 }

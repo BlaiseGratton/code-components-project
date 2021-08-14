@@ -20,6 +20,9 @@ class WireCoil extends WireSegment {
     if (this.attributes.for && this.attributes.for.value && this.parentElement) {
       this.parentElement.connectSwitchesToCoil(this)
     }
+
+    if (this.isPowered && this.isGrounded)
+      this.switches.forEach(swit => swit.onGainMagnetise())
   }
 
   drawCoil () {

@@ -2,6 +2,14 @@ class GroundConnection extends HTMLElement {
 
   get ALWAYS_GROUNDED () { return { isGrounded: true } }
 
+  toRepresentation () {
+    const xOffset = this.xOffset ? `x="${this.xOffset}"`: ''
+    const yOffset = this.yOffset ? `y="${this.yOffset}"`: ''
+    const wireX = this.wire ? `x1="${this.wire.end1.cx.baseVal.value}"` : ''
+    const wireY = this.wire ? `y1="${this.wire.end1.cy.baseVal.value}"` : ''
+    return `<ground-connection ${xOffset} ${yOffset} ${wireX} ${wireY}></ground-connection>`
+  }
+
   connectedCallback () {
     if (typeof process !== 'undefined' && !this.id) {
       this.id = `ground-connection${this.testId}`
@@ -12,7 +20,7 @@ class GroundConnection extends HTMLElement {
     const line1 = document.createElementNS('http://www.w3.org/2000/svg', 'line')
     const Y_OFFSET = 100  // for the horizontal bars of the symbol, not component positioning
 
-    let { 'x': xOffset, 'y': yOffset } = this.attributes
+    let { 'x': xOffset, 'y': yOffset, 'x1': wireEndX, 'y1': wireEndY } = this.attributes
     this.xOffset = xOffset ? parseInt(xOffset.value) : 0
     this.yOffset = yOffset ? parseInt(yOffset.value) : 0
 
@@ -46,11 +54,14 @@ class GroundConnection extends HTMLElement {
       this.parentElement.attachSVGElement(line3)
     }
 
-    this.addWireSegment()
+    this.wire = this.addWireSegment()
+    if (wireEndX) this.wire.x1 = wireEndX.value
+    if (wireEndY) this.wire.y1 = wireEndY.value
   }
 
   addWireSegment ({ x2 = 120, y2 = 100 } = {}) {
     const segment = document.createElement('wire-segment')
+    segment.isSetByComponent = true
     this.parentElement.appendChild(segment)
     segment.x1 = 120 + this.xOffset
     segment.x2 = x2 + this.xOffset
@@ -86,7 +97,7 @@ class GroundConnection extends HTMLElement {
   set groundedBy (val) { return true /* blank setter intentional */ }
 
   get parentSVG () {
-    return this.parentElement && this.parentElement.querySelector('svg')
+    return this.parentElement && this.parentElement.svg
   }
 
   get svg () {
