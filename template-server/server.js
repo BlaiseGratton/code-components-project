@@ -1,3 +1,4 @@
+import { readdirSync } from 'fs'
 import { createServer } from 'http'
 
 const htmlContentType = { 'Content-Type': 'text/html' }
@@ -14,7 +15,7 @@ const handleRequest = (req, res) => {
 
 const handleGet = (req, res) => {
   res.writeHead(200, htmlContentType)
-  res.end('hello, fellow humans')
+  res.end(JSON.stringify(readdirSync('./templates')))
 }
 
 const handlePost = (req, res) => {
