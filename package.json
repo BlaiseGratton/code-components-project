@@ -1,5 +1,6 @@
 {
   "name": "code-project",
+  "type": "module",
   "version": "0.0.0",
   "description": "A web component library and system to model computer circuitry",
   "main": "index.html",
