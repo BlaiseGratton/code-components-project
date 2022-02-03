@@ -50,7 +50,7 @@ class ComponentContainer extends HTMLElement {
     this.noUI = Boolean(this.attributes['no-ui']) // for skipping checking SVG overlaps
 
     this.scale = scale
-    this.style.position = 'absolute'
+    this.style.position = 'relative'
     this.style.left = `${xOffset}px`
     this.style.top = `${yOffset}px`
 
@@ -59,6 +59,7 @@ class ComponentContainer extends HTMLElement {
     style.textContent = `
       svg {
         border: 1px solid grey;
+        position: absolute;
       }
     `
 
