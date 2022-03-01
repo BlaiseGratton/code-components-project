@@ -256,6 +256,14 @@ class ComponentContainer extends HTMLElement {
     return halfAdder
   }
 
+  addComponent (name, { x, y} = { x: 50, y: 50 }) {
+    const component = document.createElement(name)
+    component.setAttribute('x', x)
+    component.setAttribute('y', y)
+    this.appendChild(component)
+    return component
+  }
+
   get parentXOffset () {
     return window.pageXOffset + this.parentElement.getBoundingClientRect().left
   }

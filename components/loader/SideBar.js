@@ -14,6 +14,15 @@ const style = `
     .loader-button, input[type="submit"] {
       cursor: pointer;
     }
+
+    .add-components-buttons {
+      list-style: none;
+    }
+
+    .add-components-buttons button {
+      max-width: 10em;
+      cursor: pointer;
+    }
   </style>
 `
 
@@ -38,6 +47,23 @@ class LoaderSidebar extends HTMLElement {
           <h2 id="server-url-title"></h2>
         </section>
         <section class="template-list"></section>
+        <section class="add-components">
+          <h1>Add Components</h1>
+          <ul class="add-components-buttons">
+            <li class="add-button-container">
+              <button id="wire-segment">Wire Segment</button>
+            </li>
+            <li class="add-button-container">
+              <button id="simple-relay">Relay</button>
+            </li>
+            <li class="add-button-container">
+              <button id="power-source">Power Source</button>
+            </li>
+            <li class="add-button-container">
+              <button id="ground-connection">Ground</button>
+            </li>
+          </ul>
+        </section>
       </section>
     `
 
@@ -49,7 +75,14 @@ class LoaderSidebar extends HTMLElement {
     this.serverURLTitle = this.serverInfoSection.querySelector('#server-url-title')
     this.templateList = this.querySelector('.template-list')
     this.handleLoadTemplates = this.handleLoadTemplates.bind(this)
+    this.handleAddComponent = this.handleAddComponent.bind(this)
     this.form.onsubmit = this.handleLoadTemplates
+    this.querySelectorAll('.add-components-buttons button')
+      .forEach(button => button.onclick = this.handleAddComponent)
+  }
+
+  handleAddComponent (ev) {
+    this.loader.addComponent(ev.target.id)
   }
 
   handleLoadTemplates (ev) {
@@ -64,6 +97,7 @@ class LoaderSidebar extends HTMLElement {
       url[url.length - 1] === '/' ?
         this.baseURL = url :
         this.baseURL = url + '/'
+      this.loader.baseURL = this.baseURL
     })
   }
 
@@ -79,6 +113,7 @@ class LoaderSidebar extends HTMLElement {
   loadTemplate (url) {
     fetch(this.baseURL + url).then(res => res.text()).then(html => {
       this.loader.loadTemplate(html)
+      this.loader.setTitle(url)
     })
   }
 

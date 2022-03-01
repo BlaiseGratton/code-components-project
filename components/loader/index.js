@@ -4,9 +4,13 @@ import TemplateLoaderButton from './TemplateLoaderButton.js'
 
 const style = `
   <style>
-    .container {
+    .wrapper {
       display: flex;
       flex-direction: row;
+    }
+    .main-container {
+      display: flex;
+      flex-direction: column;
     }
   </style>
 `
@@ -18,9 +22,15 @@ class TemplateLoader extends HTMLElement {
 
     template.innerHTML = `
       ${style}
-      <section class="container">
+      <section class="wrapper">
         <loader-sidebar></loader-sidebar>
-        <loader-container></loader-container>
+        <section class="main-container">
+          <section class="wrapper">
+            <h1 id="container-title">No template loaded</h1>
+            <button id="save-template">Save</button>
+          </section>
+          <loader-container></loader-container>
+        </section>
       </section>
     `
     this.appendChild(template.content)
@@ -31,14 +41,35 @@ class TemplateLoader extends HTMLElement {
     container.loader = this
     this.sidebar = sidebar
     this.container = container
+    this.containerTitle = this.querySelector('#container-title')
+    this.saveButton = this.querySelector('#save-template')
+    this.saveButton.onclick = this.saveTemplate.bind(this)
+  }
+
+  saveTemplate () {
+    if (!this.baseURL) window.alert('Server URL must be loaded')
+
+    const content = this.container.exportTemplate()
+    const headers = { 'Content-Type': 'application/json' }
+    const body = JSON.stringify({
+      name: 'test',
+      content
+    })
+
+    fetch(`${this.baseURL}`, { method: 'POST', headers, body })
+  }
+
+  setTitle (value) {
+    this.containerTitle.textContent = value
   }
 
   loadTemplate (content) {
-    const template = document.createElement('template')
-    template.innerHTML = content
-    this.container.appendChild(template.content)
+    this.container.loadTemplate(content)
   }
 
+  addComponent (name) {
+    this.container.addComponent(name)
+  }
 }
 
 window.customElements.define('template-loader', TemplateLoader)

@@ -1,11 +1,12 @@
-import { readdirSync, readFileSync } from 'fs'
+import { readdirSync, readFileSync, writeFileSync } from 'fs'
 import { createServer } from 'http'
 
 const htmlContentType = { 'Content-Type': 'text/html' }
 
 const accessHeaders = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, DELETE'
+  'Access-Control-Allow-Methods': 'OPTIONS, POST, GET, DELETE',
+  'Access-Control-Allow-Headers': 'Content-Type'
 }
 
 const handleOPTIONS = (req, res) => {
@@ -15,12 +16,12 @@ const handleOPTIONS = (req, res) => {
 
 const handleGET = (req, res) => {
   const [path, rawParams] = req.url.split('?')
+
   const params = (
     rawParams ?
       rawParams.split('&').reduce((result, current) => {
         const [key, val] = current.split('=')
-        result[key] = val
-        return result
+        return { ...result, key: val }
       }, {})
       : {})
 
@@ -55,7 +56,7 @@ const handleGET = (req, res) => {
 }
 
 const handlePOST = (req, res) => {
-  if (req.url == '/templates') {
+  if (req.url == '/') {
     let body = ''
 
     req.on('data', data => {
@@ -65,9 +66,9 @@ const handlePOST = (req, res) => {
     req.on('end', () => {
       try {
         const { name, content } = JSON.parse(body)
-        console.log({ name, content })
-        res.writeHead(201, htmlContentType)
-        res.end()
+        writeFileSync(`./templates/${name}.html`, content)
+        res.writeHead(201, { ...htmlContentType, ...accessHeaders })
+        res.end(content)
       } catch (e) {
         handleFailure(res, e)
       }
@@ -93,6 +94,8 @@ const handleRequest = (req, res) => {
   } catch (e) {
     res.writeHead(405, htmlContentType)
     res.end(e.toString())
+  } finally {
+    console.log(req.method, req.url, res.statusCode)
   }
 }
 
