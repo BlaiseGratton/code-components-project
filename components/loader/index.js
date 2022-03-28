@@ -12,6 +12,12 @@ const style = `
       display: flex;
       flex-direction: column;
     }
+    .align-vertical {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    #save-template { margin: 1em;}
   </style>
 `
 
@@ -27,7 +33,9 @@ class TemplateLoader extends HTMLElement {
         <section class="main-container">
           <section class="wrapper">
             <h1 id="container-title">No template loaded</h1>
-            <button id="save-template">Save</button>
+            <section class="align-vertical">
+              <button id="save-template">Save</button>
+            </section>
           </section>
           <loader-container></loader-container>
         </section>
@@ -46,17 +54,21 @@ class TemplateLoader extends HTMLElement {
     this.saveButton.onclick = this.saveTemplate.bind(this)
   }
 
-  saveTemplate () {
-    if (!this.baseURL) window.alert('Server URL must be loaded')
+  async saveTemplate () {
+    if (!this.baseURL) return window.alert('Server URL must be loaded')
 
     const content = this.container.exportTemplate()
     const headers = { 'Content-Type': 'application/json' }
+
     const body = JSON.stringify({
       name: 'test',
       content
     })
 
-    fetch(`${this.baseURL}`, { method: 'POST', headers, body })
+    const res = await fetch(`${this.baseURL}${body.name}.html`)
+    if (res.ok && confirm(`Overwrite template ${body.name}?` || !res.ok)) {
+      fetch(`${this.baseURL}`, { method: 'POST', headers, body })
+    }
   }
 
   setTitle (value) {

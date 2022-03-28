@@ -38,16 +38,18 @@ const handleGET = (req, res) => {
       const fileName = path.slice(1)
 
       if (!fileName) {
-        res.writeHead(404)
-        res.end('correct file path needed')
+        handleFailure(res, 'correct file path needed', 404)
       }
 
       try {
         const content = readFileSync(`./templates/${fileName}`)
         res.writeHead(200, { ...htmlContentType, ...accessHeaders })
         res.end(content)
-      } catch {
-        res.writeHead(404) && res.end()
+      } catch (e) {
+        if (e.code === 'ENOENT')
+          handleFailure(res, 'correct file path needed', 404)
+        else
+          handleFailure(res, e)
       }
     }
   } catch (e) {
@@ -56,12 +58,10 @@ const handleGET = (req, res) => {
 }
 
 const handlePOST = (req, res) => {
+
   if (req.url == '/') {
     let body = ''
-
-    req.on('data', data => {
-      body += data
-    })
+    req.on('data', datum => { body += datum })
 
     req.on('end', () => {
       try {
@@ -76,9 +76,9 @@ const handlePOST = (req, res) => {
   } else res.writeHead(404) && res.end()
 }
 
-const handleFailure = (res, error) => {
+const handleFailure = (res, error, status=500) => {
   console.error(error)
-  res.writeHead(500, htmlContentType)
+  res.writeHead(status, { ...htmlContentType, ...accessHeaders })
   res.end(error.toString())
 }
 
