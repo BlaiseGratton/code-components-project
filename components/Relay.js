@@ -75,6 +75,8 @@ class SimpleRelay extends ComponentContainer {
     wire4.connect(wireCoil)
 
     ground.connect(wire4)
+
+    this.exposedComponents = [this.outerWire1, this.outerWire2, this.outerWire3]
   }
 
 }

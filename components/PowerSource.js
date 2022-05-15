@@ -28,6 +28,7 @@ class PowerSource extends HTMLElement {
     line1.setAttribute('y2', 40 + this.yOffset)
     line1.setAttribute('stroke', 'black')
     line1.setAttribute('stroke-width', 4)
+    line1.parentComponent = this
 
     const line2 = document.createElementNS('http://www.w3.org/2000/svg', 'line')
     line2.setAttribute('x1', 22 + this.xOffset)
@@ -36,15 +37,40 @@ class PowerSource extends HTMLElement {
     line2.setAttribute('y2', 10 + this.yOffset)
     line2.setAttribute('stroke', 'black')
     line2.setAttribute('stroke-width', 4)
+    line2.parentComponent = this
 
     if (this.parentElement && this.parentSVG) {
-      this.parentElement.attachSVGElement(line1)
-      this.parentElement.attachSVGElement(line2)
+      this.parentElement.attachSVGElement(line1, line2)
     }
 
     this.wire = this.addWireSegment()
     if (wireEndX) this.wire.x2 = wireEndX.value
     if (wireEndY) this.wire.y2 = wireEndY.value
+    this.childElements = [line1, line2, this.wire]
+  }
+
+  set x (value) {
+    this.setAttribute('x', value)
+    const xDelta = value - this.xOffset
+    this.xOffset += xDelta
+    this.updateChildAttributes('x', xDelta)
+  }
+
+  set y (value) {
+    this.setAttribute('y', value)
+    const yDelta = value - this.yOffset
+    this.yOffset += yDelta
+    this.updateChildAttributes('y', yDelta)
+  }
+
+  updateChildAttributes (attribute, delta) {
+    this.childElements.forEach(elem => {
+      Array.from(elem.attributes)
+        .filter(attr => attr.name.includes(attribute))
+        .forEach(attr => {
+          attr.value = parseInt(attr.value) + delta
+        })
+    })
   }
 
   toJSON () {
@@ -75,6 +101,7 @@ class PowerSource extends HTMLElement {
     segment.y2 = y2 + this.yOffset
     segment.connect(this)
     this.parentSVG.removeChild(segment.end1)
+    segment.parentComponent = this
     return segment
   }
 

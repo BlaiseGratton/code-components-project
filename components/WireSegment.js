@@ -45,7 +45,7 @@ class WireSegment extends HTMLElement {
     line.setAttribute('x2', this.x2 + this.constructor.CIRCLE_CAP_RADIUS)
     line.setAttribute('y1', this.y1 + this.constructor.CIRCLE_CAP_RADIUS)
     line.setAttribute('y2', this.y2 + this.constructor.CIRCLE_CAP_RADIUS)
-    line.setAttribute('stroke', 'black')
+    line.setAttribute('stroke', 'darkgrey')
     line.setAttribute('stroke-width', this.constructor.STROKE_WIDTH)
     line.parentComponent = this
     this._line = line
@@ -472,11 +472,13 @@ class WireSegment extends HTMLElement {
 
   handleFlowChange () {
     if (this.line) {
-      if (this.isPowered) {
+      if (this.isPowered && this.isGrounded) {
+        this.line.style.stroke = 'violet'
+      } else if (this.isPowered) {
         this.line.style.stroke = 'red'
-      } else {
-        this.line.style.stroke = 'black'
-      }
+      } else if (this.isGrounded) {
+        this.line.style.stroke = 'blue'
+      } else this.line.style.stoke = 'darkgrey'
     }
   }
 
@@ -499,11 +501,12 @@ class WireSegment extends HTMLElement {
     }
   }
 
-  attributeChangedCallback (attribute, ...rest) {
-    this.attributeChangeHandlers[attribute](this, ...rest)
+
+  attributeChangedCallback (attribute, oldVal, newVal) {
+    if (this[attribute] != newVal) this[attribute] = parseInt(newVal)
   }
 
-  static get observedAttributes () { return ['is-powered'] }
+  static get observedAttributes () { return ['is-powered', 'x1', 'x2', 'y1', 'y2'] }
 }
 
 window.customElements.define('wire-segment', WireSegment)

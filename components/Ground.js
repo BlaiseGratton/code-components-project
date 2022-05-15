@@ -10,6 +10,30 @@ class GroundConnection extends HTMLElement {
     return `<ground-connection ${xOffset} ${yOffset} ${wireX} ${wireY}></ground-connection>`
   }
 
+  set x (value) {
+    this.setAttribute('x', value)
+    const xDelta = value - this.xOffset
+    this.xOffset += xDelta
+    this.updateChildAttributes('x', xDelta)
+  }
+
+  set y (value) {
+    this.setAttribute('y', value)
+    const yDelta = value - this.yOffset
+    this.yOffset += yDelta
+    this.updateChildAttributes('y', yDelta)
+  }
+
+  updateChildAttributes (attribute, delta) {
+    this.childElements.forEach(elem => {
+      Array.from(elem.attributes)
+        .filter(attr => attr.name.includes(attribute))
+        .forEach(attr => {
+          attr.value = parseInt(attr.value) + delta
+        })
+    })
+  }
+
   connectedCallback () {
     if (typeof process !== 'undefined' && !this.id) {
       this.id = `ground-connection${this.testId}`
@@ -31,6 +55,7 @@ class GroundConnection extends HTMLElement {
     line1.setAttribute('y2', Y_OFFSET + this.yOffset)
     line1.setAttribute('stroke', 'black')
     line1.setAttribute('stroke-width', 3)
+    line1.parentComponent = this
 
     const line2 = document.createElementNS('http://www.w3.org/2000/svg', 'line')
     line2.setAttribute('x1', 110 + this.xOffset)
@@ -39,6 +64,7 @@ class GroundConnection extends HTMLElement {
     line2.setAttribute('y2', Y_OFFSET + 8 + this.yOffset)
     line2.setAttribute('stroke', 'black')
     line2.setAttribute('stroke-width', 3)
+    line2.parentComponent = this
 
     const line3 = document.createElementNS('http://www.w3.org/2000/svg', 'line')
     line3.setAttribute('x1', 116 + this.xOffset)
@@ -47,16 +73,17 @@ class GroundConnection extends HTMLElement {
     line3.setAttribute('y2', Y_OFFSET + 16 + this.yOffset)
     line3.setAttribute('stroke', 'black')
     line3.setAttribute('stroke-width', 3)
+    line3.parentComponent = this
 
     if (this.parentElement && this.parentSVG) {
-      this.parentElement.attachSVGElement(line1)
-      this.parentElement.attachSVGElement(line2)
-      this.parentElement.attachSVGElement(line3)
+      this.parentElement.attachSVGElement(line1, line2, line3)
     }
 
     this.wire = this.addWireSegment()
     if (wireEndX) this.wire.x1 = wireEndX.value
     if (wireEndY) this.wire.y1 = wireEndY.value
+
+    this.childElements = [line1, line2, line3, this.wire]
   }
 
   addWireSegment ({ x2 = 120, y2 = 100 } = {}) {
@@ -69,6 +96,7 @@ class GroundConnection extends HTMLElement {
     segment.y2 = y2 + this.yOffset
     segment.connect(this)
     this.parentSVG.removeChild(segment.end2)
+    segment.parentComponent = this
     return segment
   }
 

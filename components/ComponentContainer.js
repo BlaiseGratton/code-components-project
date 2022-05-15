@@ -31,6 +31,8 @@ class ComponentContainer extends HTMLElement {
     this.appendChild(template.content)
   }
 
+  exposedComponents = []
+
   connectedCallback () {
 
     const {
@@ -79,6 +81,32 @@ class ComponentContainer extends HTMLElement {
     this._svg = svg
     this.setViewBox(width, height)
   }
+
+  attributeChangedCallback (attribute, oldVal, newVal) {
+    if (attribute === 'x') {
+      this.style.left = `${newVal}px`
+      this.updateExposedComponents('x', newVal - oldVal)
+    }
+    if (attribute === 'y') {
+      this.style.top = `${newVal}px`
+      this.updateExposedComponents('y', newVal - oldVal)
+    }
+  }
+
+  set x (val) { this.setAttribute('x', val) }
+  set y (val) { this.setAttribute('y', val) }
+
+  updateExposedComponents (attribute, delta) {
+    this.exposedComponents.forEach(component => {
+      Array.from(component.attributes)
+        .filter(attr => attr.name.includes(attribute))
+        .forEach(attr => {
+          attr.value = parseInt(attr.value) + delta
+        })
+    })
+  }
+
+  static get observedAttributes () { return ['x', 'y'] }
 
   get svg () {
     return this._svg
