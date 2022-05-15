@@ -478,7 +478,7 @@ class WireSegment extends HTMLElement {
         this.line.style.stroke = 'red'
       } else if (this.isGrounded) {
         this.line.style.stroke = 'blue'
-      } else this.line.style.stoke = 'darkgrey'
+      } else this.line.style.stroke = 'darkgrey'
     }
   }
 

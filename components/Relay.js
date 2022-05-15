@@ -32,6 +32,7 @@ class SimpleRelay extends ComponentContainer {
     this.appendChild(wire1)
     wire1.noDisconnect = true
     this.outerWire1 = this.parentElement.exposeWireCap(wire1.end1, 'up')
+    wire1.connect(this.outerWire1)
     this.wire1 = wire1
     wire1.connect(switch1.wire1)
 
@@ -43,6 +44,7 @@ class SimpleRelay extends ComponentContainer {
     this.appendChild(wire2)
     wire2.noDisconnect = true
     this.outerWire2 = this.parentElement.exposeWireCap(wire2.end2, 'right')
+    wire2.connect(this.outerWire2)
     this.wire2 = wire2
     wire2.connect(switch1.wire2)
 
@@ -54,6 +56,7 @@ class SimpleRelay extends ComponentContainer {
     this.appendChild(wire3)
     wire3.noDisconnect = true
     this.outerWire3 = this.parentElement.exposeWireCap(wire3.end1, 'left')
+    wire3.connect(this.outerWire3)
     this.wire3 = wire3
 
     const wireCoil = document.createElement('wire-coil')

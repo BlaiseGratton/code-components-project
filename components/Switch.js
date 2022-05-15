@@ -51,19 +51,19 @@ class SimpleSwitch extends WireSegment {
 
   open () {
     if (!this.isOpen) {
-      this.disconnect(this.wire2)
       this.isClosed = false
       this.x2 -= 20
       this.y2 -= 20
+      this.disconnect(this.wire2)
     }
   }
 
   close () {
     if (this.isOpen) {
-      this.connect(this.wire2)
       this.isClosed = true
       this.x2 = this.wire2.x1
       this.y2 = this.wire2.y1
+      this.connect(this.wire2)
     }
   }
 
