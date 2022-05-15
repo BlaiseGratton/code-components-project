@@ -12,4 +12,4 @@ import InverterRelay from './InverterRelay.js'
 import * as gates from './gates/index.js'
 import * as adders from './adders/index.js'
 import * as displays from './displays/index.js'
-
+import * as loader from './loader/index.js'

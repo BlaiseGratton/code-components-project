@@ -31,6 +31,8 @@ class ComponentContainer extends HTMLElement {
     this.appendChild(template.content)
   }
 
+  exposedComponents = []
+
   connectedCallback () {
 
     const {
@@ -50,7 +52,7 @@ class ComponentContainer extends HTMLElement {
     this.noUI = Boolean(this.attributes['no-ui']) // for skipping checking SVG overlaps
 
     this.scale = scale
-    this.style.position = 'absolute'
+    this.style.position = 'relative'
     this.style.left = `${xOffset}px`
     this.style.top = `${yOffset}px`
 
@@ -59,6 +61,7 @@ class ComponentContainer extends HTMLElement {
     style.textContent = `
       svg {
         border: 1px solid grey;
+        position: absolute;
       }
     `
 
@@ -78,6 +81,32 @@ class ComponentContainer extends HTMLElement {
     this._svg = svg
     this.setViewBox(width, height)
   }
+
+  attributeChangedCallback (attribute, oldVal, newVal) {
+    if (attribute === 'x') {
+      this.style.left = `${newVal}px`
+      this.updateExposedComponents('x', newVal - oldVal)
+    }
+    if (attribute === 'y') {
+      this.style.top = `${newVal}px`
+      this.updateExposedComponents('y', newVal - oldVal)
+    }
+  }
+
+  set x (val) { this.setAttribute('x', val) }
+  set y (val) { this.setAttribute('y', val) }
+
+  updateExposedComponents (attribute, delta) {
+    this.exposedComponents.forEach(component => {
+      Array.from(component.attributes)
+        .filter(attr => attr.name.includes(attribute))
+        .forEach(attr => {
+          attr.value = parseInt(attr.value) + delta
+        })
+    })
+  }
+
+  static get observedAttributes () { return ['x', 'y'] }
 
   get svg () {
     return this._svg
@@ -255,19 +284,23 @@ class ComponentContainer extends HTMLElement {
     return halfAdder
   }
 
+  addComponent (name, { x, y} = { x: 50, y: 50 }) {
+    const component = document.createElement(name)
+    component.setAttribute('x', x)
+    component.setAttribute('y', y)
+    this.appendChild(component)
+    return component
+  }
+
   get parentXOffset () {
-    const xValue = this.parentElement.attributes.x
-    const offset = (parseInt(xValue && xValue.value) || 0)
-    return offset + (this.parentElement && this.parentElement.parentXOffset || 0)
+    return window.pageXOffset + this.parentElement.getBoundingClientRect().left
   }
 
   get parentYOffset () {
-    const yValue = this.parentElement.attributes.y
-    const offset = (parseInt(yValue && yValue.value) || 0)
-    return offset + (this.parentElement && this.parentElement.parentYOffset || 0)
+    return window.pageYOffset + this.parentElement.getBoundingClientRect().top
   }
 
-  handleIntersections (movedEnd, xOffset, yOffset) {
+  handleIntersections (movedEnd, xOffset, yOffset, isFromDrag) {
     if (!this.svg.createSVGRect) return []
     const movedWire = movedEnd.parentComponent
     const circleCapRadius = movedWire.constructor.CIRCLE_CAP_RADIUS
@@ -279,7 +312,7 @@ class ComponentContainer extends HTMLElement {
     mousePosition.width = (circleCapRadius * 2 + strokeWidth) * this.scale * 1.25
     mousePosition.height = (circleCapRadius * 2 + strokeWidth) * this.scale * 1.25
 
-    if (false) { // for visually debugging overlap checks
+    if (false && isFromDrag) { // for visually debugging overlap checks
       const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
       rect.setAttribute('x', mousePosition.x)
       rect.setAttribute('y', mousePosition.y)

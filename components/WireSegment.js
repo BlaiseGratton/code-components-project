@@ -45,7 +45,7 @@ class WireSegment extends HTMLElement {
     line.setAttribute('x2', this.x2 + this.constructor.CIRCLE_CAP_RADIUS)
     line.setAttribute('y1', this.y1 + this.constructor.CIRCLE_CAP_RADIUS)
     line.setAttribute('y2', this.y2 + this.constructor.CIRCLE_CAP_RADIUS)
-    line.setAttribute('stroke', 'black')
+    line.setAttribute('stroke', 'darkgrey')
     line.setAttribute('stroke-width', this.constructor.STROKE_WIDTH)
     line.parentComponent = this
     this._line = line
@@ -81,18 +81,21 @@ class WireSegment extends HTMLElement {
         cap.addEventListener('mousedown', function (ev) { self.isDraggingCircle = true })
 
         cap.addEventListener('mouseup', function ({ currentTarget, clientX, clientY, ...ev }) {
+          if (self.isExposed) return
           self.isDraggingCircle = false
           const xOffset = clientX - parseInt(this.parentComponent.parentElement.style.left)
           const yOffset = clientY - parseInt(this.parentComponent.parentElement.style.top)
-          self.checkForOverlappingComponents(currentTarget, xOffset, yOffset)
+          self.checkForOverlappingComponents(currentTarget, xOffset - self.parentXOffset, yOffset - self.parentYOffset, true)
         })
 
         cap.addEventListener('mouseenter', function (ev) {
+          if (self.isExposed) return
           ev.currentTarget.style.fill = 'orange'
           ev.currentTarget.attributes.r.value = 8
         })
 
         cap.addEventListener('mouseleave', function (ev) {
+          if (self.isExposed) return
           ev.currentTarget.style.fill = 'black'
           ev.currentTarget.attributes.r.value = 4
           self.isDraggingCircle = false
@@ -133,8 +136,8 @@ class WireSegment extends HTMLElement {
     }
   }
 
-  checkForOverlappingComponents (capElement, xPos, yPos) {
-    const overlappingCaps = this.parentElement.handleIntersections(capElement, xPos, yPos)
+  checkForOverlappingComponents (capElement, xPos, yPos, isFromDrag) {
+    const overlappingCaps = this.parentElement.handleIntersections(capElement, xPos, yPos, isFromDrag)
     const otherEndCap = this.getOtherSegmentCap(capElement)
 
     this.connectedComponents.forEach(component => {
@@ -309,15 +312,11 @@ class WireSegment extends HTMLElement {
   get end2 () { return this._end2 }
 
   get parentXOffset () {
-    const xValue = this.parentElement.attributes.x
-    const offset = (parseInt(xValue && xValue.value) || 0)
-    return offset + (this.parentElement && this.parentElement.parentXOffset || 0)
+    return window.pageXOffset + this.parentElement.getBoundingClientRect().left
   }
 
   get parentYOffset () {
-    const yValue = this.parentElement.attributes.y
-    const offset = (parseInt(yValue && yValue.value) || 0)
-    return offset + (this.parentElement && this.parentElement.parentYOffset || 0)
+    return window.pageYOffset + this.parentElement.getBoundingClientRect().top
   }
 
   set svgViewWidth (value) {
@@ -473,11 +472,13 @@ class WireSegment extends HTMLElement {
 
   handleFlowChange () {
     if (this.line) {
-      if (this.isPowered) {
+      if (this.isPowered && this.isGrounded) {
+        this.line.style.stroke = 'violet'
+      } else if (this.isPowered) {
         this.line.style.stroke = 'red'
-      } else {
-        this.line.style.stroke = 'black'
-      }
+      } else if (this.isGrounded) {
+        this.line.style.stroke = 'blue'
+      } else this.line.style.stoke = 'darkgrey'
     }
   }
 
@@ -486,8 +487,8 @@ class WireSegment extends HTMLElement {
     const xOffset = window.pageXOffset + clientX - this.parentXOffset
     const yOffset = window.pageYOffset + clientY - this.parentYOffset
 
-    movedEnd.attributes.cx.value = xOffset / this.parentElement.scale // + this.parentXOffset
-    movedEnd.attributes.cy.value = yOffset / this.parentElement.scale //+ this.parentYOffset
+    movedEnd.attributes.cx.value = xOffset / this.parentElement.scale
+    movedEnd.attributes.cy.value = yOffset / this.parentElement.scale
 
     if (this.end1 === movedEnd) {
       this.x1 = +movedEnd.attributes.cx.value
@@ -500,11 +501,12 @@ class WireSegment extends HTMLElement {
     }
   }
 
-  attributeChangedCallback (attribute, ...rest) {
-    this.attributeChangeHandlers[attribute](this, ...rest)
+
+  attributeChangedCallback (attribute, oldVal, newVal) {
+    if (this[attribute] != newVal) this[attribute] = parseInt(newVal)
   }
 
-  static get observedAttributes () { return ['is-powered'] }
+  static get observedAttributes () { return ['is-powered', 'x1', 'x2', 'y1', 'y2'] }
 }
 
 window.customElements.define('wire-segment', WireSegment)
