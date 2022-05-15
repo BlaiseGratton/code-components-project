@@ -23,7 +23,16 @@ class LoaderContainer extends HTMLElement {
   }
 
   handleContainerClick (ev) {
-    console.log(ev.target.parentElement)
+    let component = ev.target.parentComponent
+
+    // in case a wire is assigned a parent as part of a larger component
+    if (component && component.localName === 'wire-segment')
+      component = component.parentComponent || component
+
+    // if no parent component but the event is caught by a container e.g. a relay
+    if (!component)
+      component = ev.target.parentElement
+    this.loader.sidebar.handleSelectComponent(component)
   }
 
   createContainerElement () {

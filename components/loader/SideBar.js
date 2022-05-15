@@ -1,5 +1,9 @@
 const style = `
   <style>
+    .name {
+      font-size: .95em;
+    }
+
     .sidebar-container {
       min-width: 14em;
       display: flex;
@@ -29,6 +33,8 @@ const style = `
 
 class LoaderSidebar extends HTMLElement {
 
+  ALLOWED_ATTRIBUTES = ['x', 'y', 'x1', 'y1', 'x2', 'y2', 'width', 'height']
+
   connectedCallback () {
     const template = document.createElement('template') 
 
@@ -47,6 +53,11 @@ class LoaderSidebar extends HTMLElement {
           <h2 id="server-url-title"></h2>
         </section>
         <section class="template-list"></section>
+        <section class="selected-component">
+          <h1>Selected Component</h1>
+          <h2 class="name"></h2>
+          <section class="attributes"></section>
+        </section>
         <section class="add-components">
           <h1>Add Components</h1>
           <ul class="add-components-buttons">
@@ -79,6 +90,10 @@ class LoaderSidebar extends HTMLElement {
     this.form.onsubmit = this.handleLoadTemplates
     this.querySelectorAll('.add-components-buttons button')
       .forEach(button => button.onclick = this.handleAddComponent)
+    this.selectedComponent = null
+    this.selectedComponentName = this.querySelector('.selected-component .name')
+    this.selectedComponentAttributes = this.querySelector('.selected-component .attributes')
+    this.attributeEventHandlers = []
   }
 
   handleAddComponent (ev) {
@@ -117,6 +132,23 @@ class LoaderSidebar extends HTMLElement {
     })
   }
 
+  handleSelectComponent (component) {
+    this.selectedComponent = component
+    this.selectedComponentName.textContent = component.tagName.replace('-', ' ')
+
+    while (this.selectedComponentAttributes.firstChild) {
+      this.selectedComponentAttributes.removeChild(this.selectedComponentAttributes.firstChild)
+    }
+    for (const attrName of this.ALLOWED_ATTRIBUTES) {
+      if (component.hasAttribute(attrName)) this.handleBindAttribute(attrName)
+    }
+  }
+
+  handleBindAttribute (attrName) {
+    const attributeControl = document.createElement('attribute-control')
+    this.selectedComponentAttributes.appendChild(attributeControl)
+    attributeControl.registerAttribute(this.selectedComponent, attrName)
+  }
 }
 
 window.customElements.define('loader-sidebar', LoaderSidebar)

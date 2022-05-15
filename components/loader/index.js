@@ -1,3 +1,4 @@
+import AttributeControl from './AttributeControl.js'
 import LoaderContainer from './Container.js'
 import LoaderSidebar from './SideBar.js'
 import TemplateLoaderButton from './TemplateLoaderButton.js'
@@ -60,13 +61,18 @@ class TemplateLoader extends HTMLElement {
     const content = this.container.exportTemplate()
     const headers = { 'Content-Type': 'application/json' }
 
-    const body = JSON.stringify({
-      name: 'test',
-      content
-    })
+    if (this.containerTitle.textContent === 'No template loaded') {
+      this.setTitle(prompt('Template name (.html will be added):'))
+    }
 
-    const res = await fetch(`${this.baseURL}${body.name}.html`)
-    if (res.ok && confirm(`Overwrite template ${body.name}?` || !res.ok)) {
+    const payload = {
+      name: this.containerTitle.textContent,
+      content
+    }
+    const body = JSON.stringify(payload)
+
+    const res = await fetch(`${this.baseURL}${payload.name}.html`)
+    if (res.ok && confirm(`Overwrite template ${payload.name}?` || !res.ok)) {
       fetch(`${this.baseURL}`, { method: 'POST', headers, body })
     }
   }
