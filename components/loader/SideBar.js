@@ -65,13 +65,28 @@ class LoaderSidebar extends HTMLElement {
               <button id="wire-segment">Wire Segment</button>
             </li>
             <li class="add-button-container">
-              <button id="simple-relay">Relay</button>
-            </li>
-            <li class="add-button-container">
               <button id="power-source">Power Source</button>
             </li>
             <li class="add-button-container">
               <button id="ground-connection">Ground</button>
+            </li>
+            <li class="add-button-container">
+              <button id="simple-switch">Switch</button>
+            </li>
+            <li class="add-button-container">
+              <button id="throw-switch">Throw Switch</button>
+            </li>
+            <li class="add-button-container">
+              <button id="wire-coil">Wire Coil</button>
+            </li>
+            <li class="add-button-container">
+              <button id="simple-bulb">Bulb</button>
+            </li>
+            <li class="add-button-container">
+              <button id="simple-relay">Relay</button>
+            </li>
+            <li class="add-button-container">
+              <button id="inverter-relay">Inverter Relay</button>
             </li>
           </ul>
         </section>

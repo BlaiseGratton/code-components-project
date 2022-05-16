@@ -284,10 +284,25 @@ class ComponentContainer extends HTMLElement {
     return halfAdder
   }
 
+  wireBasedComponents = [
+    'wire-segment',
+    'simple-switch',
+    'throw-switch',
+    'wire-coil',
+    'simple-bulb'
+  ]
+
   addComponent (name, { x, y} = { x: 50, y: 50 }) {
     const component = document.createElement(name)
-    component.setAttribute('x', x)
-    component.setAttribute('y', y)
+    if (!this.wireBasedComponents.find(c => c === name)) {
+      component.setAttribute('x', x)
+      component.setAttribute('y', y)
+    } else {
+      component.setAttribute('x1', x)
+      component.setAttribute('y1', y)
+      component.setAttribute('x2', x + 100)
+      component.setAttribute('y2', y + 50)
+    }
     this.appendChild(component)
     return component
   }
