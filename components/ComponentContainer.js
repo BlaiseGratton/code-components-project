@@ -301,7 +301,7 @@ class ComponentContainer extends HTMLElement {
       component.setAttribute('x1', x)
       component.setAttribute('y1', y)
       component.setAttribute('x2', x + 100)
-      component.setAttribute('y2', y + 50)
+      component.setAttribute('y2', y)
     }
     this.appendChild(component)
     return component

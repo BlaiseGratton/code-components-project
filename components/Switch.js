@@ -36,11 +36,15 @@ class SimpleSwitch extends WireSegment {
     if (this.id && this.parentElement) {
       this.parentElement.connectCoilsToSwitch(this)
     }
+    this.relatedComponents = [this.wire1, this.wire2]
+    this.isMoving = false
   }
 
   constructor (isClosed) {
     super()
     this.isClosed = Boolean(isClosed)
+    this.relatedComponents = []
+    this.isMoving = true
   }
 
   get isOpen () { return !this.isClosed }
@@ -49,22 +53,75 @@ class SimpleSwitch extends WireSegment {
 
   onGainMagnetise () { this.close() }
 
+  get x1 () { return this._x1 }
+  get x2 () { return this._x2 }
+  get y1 () { return this._y1 }
+  get y2 () { return this._y2 }
+
+  updateRelatedAttributes (component, attribute, delta) {
+    Array.from(component.attributes)
+      .filter(attr => attr.name.includes(attribute))
+      .forEach(attr => {
+        attr.value = parseInt(attr.value) + delta
+      })
+  }
+
+  set x1 (val) {
+    const delta = val - this.x1
+    super.x1 = val
+
+    if (delta && !this.isMoving) {
+      this.updateRelatedAttributes(this.wire1, 'x', delta)
+    }
+  }
+
+  set y1 (val) {
+    const delta = val - this.y1
+    super.y1 = val
+
+    if (delta && !this.isMoving) {
+      this.updateRelatedAttributes(this.wire1, 'y', delta)
+    }
+  }
+
+  set x2 (val) {
+    const delta = val - this.x2
+    super.x2 = val
+
+    if (delta && !this.isMoving) {
+      this.updateRelatedAttributes(this.wire2, 'x', delta)
+    }
+  }
+
+  set y2 (val) {
+    const delta = val - this.y2
+    super.y2 = val
+
+    if (delta && !this.isMoving) {
+      this.updateRelatedAttributes(this.wire2, 'y', delta)
+    }
+  }
+
   open () {
+    this.isMoving = true
     if (!this.isOpen) {
       this.isClosed = false
       this.x2 -= 20
       this.y2 -= 20
       this.disconnect(this.wire2)
     }
+    this.isMoving = false
   }
 
   close () {
+    this.isMoving = true
     if (this.isOpen) {
       this.isClosed = true
       this.x2 = this.wire2.x1
       this.y2 = this.wire2.y1
       this.connect(this.wire2)
     }
+    this.isMoving = false
   }
 
   connect (component) {

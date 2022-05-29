@@ -8,9 +8,11 @@ class ThrowSwitch extends SimpleSwitch {
   connectedCallback () {
     super.connectedCallback()
 
+    this.isMoving = true
     this.x2 = this.wire2.x1
     this.y2 = this.wire2.y1
     if (this.isClosed) this.connect(this.wire2)
+    this.isMoving = false
   }
 
   constructor (isClosed = true) {
@@ -23,21 +25,25 @@ class ThrowSwitch extends SimpleSwitch {
   onLoseMagnetise () { this.close() }
 
   open () {
+    this.isMoving = true
     if (!this.isOpen) {
       this.isClosed = false
       this.x2 -= 10
       this.y2 += 15
       this.disconnect(this.wire2)
     }
+    this.isMoving = false
   }
 
   close () {
+    this.isMoving = true
     if (this.isOpen) {
       this.isClosed = true
       this.x2 = this.wire2.x1
       this.y2 = this.wire2.y1
       this.connect(this.wire2)
     }
+    this.isMoving = false
   }
 
   connect (component) {
