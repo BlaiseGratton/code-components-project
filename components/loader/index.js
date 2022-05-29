@@ -59,21 +59,23 @@ class TemplateLoader extends HTMLElement {
     if (!this.baseURL) return window.alert('Server URL must be loaded')
 
     const content = this.container.exportTemplate()
+    if (!content) return window.alert('No template content')
+
     const headers = { 'Content-Type': 'application/json' }
 
     if (this.containerTitle.textContent === 'No template loaded') {
-      this.setTitle(prompt('Template name (.html will be added):'))
+      this.setTitle(prompt('Template name (.html will be added):') + '.html')
     }
 
     const payload = {
-      name: this.containerTitle.textContent,
+      name: this.containerTitle.textContent.replace('.html', ''),
       content
     }
     const body = JSON.stringify(payload)
-
     const res = await fetch(`${this.baseURL}${payload.name}.html`)
-    if (res.ok && confirm(`Overwrite template ${payload.name}?` || !res.ok)) {
-      fetch(`${this.baseURL}`, { method: 'POST', headers, body })
+
+    if (res.ok && confirm(`Overwrite template ${payload.name}?`) || !res.ok) {
+      const success = await fetch(`${this.baseURL}`, { method: 'POST', headers, body })
     }
   }
 

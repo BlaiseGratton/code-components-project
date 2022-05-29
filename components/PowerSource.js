@@ -106,7 +106,8 @@ class PowerSource extends HTMLElement {
   }
 
   get parentSVG () {
-    return this.parentElement && this.parentElement.querySelector('svg')
+    //return this.parentElement && this.parentElement.querySelector('svg')
+    return this.parentElement && this.parentElement.svg
   }
 
   get svg () {

@@ -15,6 +15,11 @@ const style = `
       flex-direction: column;
     }
 
+    .template-list {
+      display: flex;
+      flex-direction: column;
+    }
+
     .loader-button, input[type="submit"] {
       cursor: pointer;
     }
