@@ -82,6 +82,7 @@ class GroundConnection extends HTMLElement {
     this.wire = this.addWireSegment()
     if (wireEndX) this.wire.x1 = wireEndX.value
     if (wireEndY) this.wire.y1 = wireEndY.value
+    this.wire.determineCurrent()
 
     this.childElements = [line1, line2, line3, this.wire]
   }

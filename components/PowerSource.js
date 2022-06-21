@@ -1,6 +1,6 @@
 class PowerSource extends HTMLElement {
 
-  get ALWAYS_POWERED () { return { isPowered: true } }
+  get ALWAYS_POWERED () { return { isPowered: true, getCurrentValue: () => 1 } }
 
   toRepresentation () {
     const xOffset = this.xOffset ? `x="${this.xOffset}"`: ''
@@ -46,7 +46,9 @@ class PowerSource extends HTMLElement {
     this.wire = this.addWireSegment()
     if (wireEndX) this.wire.x2 = wireEndX.value
     if (wireEndY) this.wire.y2 = wireEndY.value
+    this.wire.end1.connectedCaps.push(this.poweredBy)
     this.childElements = [line1, line2, this.wire]
+    this.wire.determineCurrent()
   }
 
   set x (value) {

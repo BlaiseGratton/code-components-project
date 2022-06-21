@@ -52,6 +52,7 @@ class WireSegment extends HTMLElement {
 
     if (!(this.constructor.name === 'SimpleSwitch' || this.constructor.name === 'ThrowSwitch')) {
       const segmentEnd1 = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+      segmentEnd1.connectedCaps = []
       segmentEnd1.setAttribute('class', 'segment-cap')
       segmentEnd1.setAttribute('cx', this.x1 + this.constructor.CIRCLE_CAP_RADIUS)
       segmentEnd1.setAttribute('cy', this.y1 + this.constructor.CIRCLE_CAP_RADIUS)
@@ -59,8 +60,15 @@ class WireSegment extends HTMLElement {
       segmentEnd1.setAttribute('fill', 'black')
       segmentEnd1.parentComponent = this
       this._end1 = segmentEnd1
+      const end1Display = document.createElement('p')
+      end1Display.style.position = 'absolute'
+      end1Display.style.top = this.y1
+      end1Display.style.left = this.x1
+      // this.appendChild(end1Display)
+      this.end1Display = end1Display
 
       const segmentEnd2 = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+      segmentEnd2.connectedCaps = []
       segmentEnd2.setAttribute('class', 'segment-cap')
       segmentEnd2.setAttribute('cx', this.x2 + this.constructor.CIRCLE_CAP_RADIUS)
       segmentEnd2.setAttribute('cy', this.y2 + this.constructor.CIRCLE_CAP_RADIUS)
@@ -68,6 +76,12 @@ class WireSegment extends HTMLElement {
       segmentEnd2.setAttribute('fill', 'black')
       segmentEnd2.parentComponent = this
       this._end2 = segmentEnd2
+      const end2Display = document.createElement('p')
+      end2Display.style.position = 'absolute'
+      end2Display.style.top = this.y2
+      end2Display.style.left = this.x2
+      // this.appendChild(end2Display)
+      this.end2Display = end2Display
     }
 
     if (this.parentElement && this.parentSVG) {
@@ -133,6 +147,7 @@ class WireSegment extends HTMLElement {
         }
       })
 
+      this.handleFlowChange()
     }
   }
 
@@ -156,7 +171,7 @@ class WireSegment extends HTMLElement {
 
     overlappingCaps.forEach(cap => {
       if (!this.connectedComponents.includes(cap.parentComponent)) {
-        this.connect(cap.parentComponent)
+        this.connect(cap.parentComponent, cap, capElement)
       }
     })
   }
@@ -206,6 +221,67 @@ class WireSegment extends HTMLElement {
     return this.parentElement ? this.parentElement.svg : null
   }
 
+  getCurrentValue (cap) {
+    if (!cap || !cap.connectedCaps) return 0
+    return cap.connectedCaps.reduce((sum, cap) => sum + this.getCurrentValue(cap), 0)
+  }
+
+  getOpposingEndCurrent (cap) {
+    if (this.parentComponent) {
+      if (this.parentComponent.tagName === 'POWER-SOURCE') return 1
+      if (this.parentComponent.tagName === 'GROUND-CONNECTION') return -1000000
+    }
+    if (cap.parentComponent && cap.parentComponent.parentComponent) {
+      if (cap.parentComponent.parentComponent.tagName === 'POWER-SOURCE') return 1
+      if (cap.parentComponent.parentComponent.tagName === 'GROUND-CONNECTION') return -1000000
+    }
+    const otherEndCap = this.getOtherSegmentCap(cap)
+    return this.getCurrentValue(otherEndCap)
+  }
+
+  determineCurrent () {
+    if (!this._end1 || !this._end2) return
+    if (this.parentComponent && this.parentComponent.tagName === 'POWER-SOURCE') {
+      this.end1Display.textContent = 1
+      this.end2Display.textContent = 1
+      return
+    }
+    if (this.parentComponent && this.parentComponent.tagName === 'GROUND-CONNECTION') {
+      this.end1Display.textContent = -1
+      this.end2Display.textContent = -1
+      return
+    }
+    const end1Charge = this._end1.connectedCaps.reduce(
+      (sum, cap) => sum + this.getOpposingEndCurrent(cap), 0)
+    const end2Charge = this._end2.connectedCaps.reduce(
+      (sum, cap) => sum + this.getOpposingEndCurrent(cap), 0)
+
+    if (this._end1.connectedCaps.length && !this._end2.connectedCaps.length) {
+      this.end1Display.textContent = end1Charge
+      this.end2Display.textContent = end1Charge
+    }
+    if (!this._end1.connectedCaps.length && this._end2.connectedCaps.length) {
+      this.end1Display.textContent = end2Charge
+      this.end2Display.textContent = end2Charge
+    }
+  }
+
+  get currentValue () {
+    // from the perspective of end1 flowing to end2
+    if (!this._end1 || !this._end2) return
+    const end1Charge = this._end1.connectedCaps.reduce(
+      (sum, cap) => sum + this.getOpposingEndCurrent(cap), 0)
+    const end2Charge = this._end2.connectedCaps.reduce(
+      (sum, cap) => sum + this.getOpposingEndCurrent(cap), 0)
+    this.end1Display.textContent = end1Charge
+    this.end2Display.textContent = end2Charge
+    return end1Charge - end2Charge
+  }
+
+  get hasCurrent () {
+    return !!this.currentValue
+  }
+
   get x1 () { return this._x1 }
   get x2 () { return this._x2 }
   get y1 () { return this._y1 }
@@ -214,6 +290,7 @@ class WireSegment extends HTMLElement {
   set x1 (val) {
     this._x1 = val
     this.setAttribute('x1', val)
+    if (this.end1Display) this.end1Display.style.left = val + 'px'
 
     if (this.line) this.line.attributes.x1.value = val
     if (this.end1) this.end1.attributes.cx.value = val
@@ -238,6 +315,7 @@ class WireSegment extends HTMLElement {
   set x2 (val) {
     this._x2 = val
     this.setAttribute('x2', val)
+    if (this.end2Display) this.end2Display.style.left = val + 'px'
 
     if (this.line) this.line.attributes.x2.value = val
     if (this.end2) this.end2.attributes.cx.value = val
@@ -262,6 +340,7 @@ class WireSegment extends HTMLElement {
   set y1 (val) {
     this._y1 = val
     this.setAttribute('y1', val)
+    if (this.end1Display) this.end1Display.style.top = val + 'px'
 
     if (this.line) this.line.attributes.y1.value = val
     if (this.end1) this.end1.attributes.cy.value = val
@@ -286,6 +365,7 @@ class WireSegment extends HTMLElement {
   set y2 (val) {
     this._y2 = val
     this.setAttribute('y2', val)
+    if (this.end2Display) this.end2Display.style.top = val + 'px'
 
     if (this.line) this.line.attributes.y2.value = val
     if (this.end2) this.end2.attributes.cy.value = val
@@ -427,11 +507,15 @@ class WireSegment extends HTMLElement {
                .find(com => com.groundedBy !== this)
   }
 
-  connect (newComponent) {
+  connect (newComponent, newComponentCap, thisCap) {
     if (this.connectedComponents.includes(newComponent)) return
 
     this.connectedComponents.push(newComponent)
-    newComponent.connect(this)
+    if (thisCap) {
+      if (!thisCap.connectedCaps.find(x => x === newComponentCap))
+        thisCap.connectedCaps.push(newComponentCap)
+    }
+    newComponent.connect(this, thisCap, newComponentCap)
 
     if (this.isPowered && !newComponent.isPowered) {
       newComponent.poweredBy = this
@@ -454,6 +538,10 @@ class WireSegment extends HTMLElement {
     if (!this.connectedComponents.includes(oldComponent)) return
 
     this.connectedComponents = this.connectedComponents.filter(x => x !== oldComponent)
+    if (this._end1 && this._end1.connectedCaps)
+      this._end1.connectedCaps = this._end1.connectedCaps.filter(cap => cap.parentComponent === this)
+    if (this._end2 && this._end2.connectedCaps)
+      this._end2.connectedCaps = this._end2.connectedCaps.filter(cap => cap.parentComponent === this)
     oldComponent.disconnect(this)
 
     if (this.poweredBy === oldComponent) {
@@ -471,14 +559,15 @@ class WireSegment extends HTMLElement {
   }
 
   handleFlowChange () {
+    this.determineCurrent()
     if (this.line) {
-      if (this.isPowered && this.isGrounded) {
+      if (this.isPowered && this.isGrounded && this.hasCurrent) {
         this.line.style.stroke = 'violet'
       } else if (this.isPowered) {
         this.line.style.stroke = 'red'
       } else if (this.isGrounded) {
         this.line.style.stroke = 'blue'
-      } else this.line.style.stoke = 'darkgrey'
+      } else this.line.style.stroke = 'darkgrey'
     }
   }
 
