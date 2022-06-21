@@ -20,6 +20,7 @@ class AttributeControl extends HTMLElement {
     this.attributeName = attributeName
     this.attributeValue = component.getAttribute(attributeName)
     this.component = component
+    if (attributeName === 'scale') this.input.setAttribute('step', '0.01')
   }
 
   get attributeName () { return this._name }

@@ -68,6 +68,8 @@ class ORGate extends ComponentContainer {
     wire2.connect(relay2.wire2)
     wire1.noDisconnect = true
     this.outputWire = this.parentElement.exposeWireCap(wire1.end2, 'right')
+
+    this.exposedComponents = [this.inputWire1, this.inputWire2, this.outputWire]
   }
 
 }

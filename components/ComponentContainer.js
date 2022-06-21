@@ -297,6 +297,7 @@ class ComponentContainer extends HTMLElement {
     if (!this.wireBasedComponents.find(c => c === name)) {
       component.setAttribute('x', x)
       component.setAttribute('y', y)
+      component.setAttribute('scale', '1')
     } else {
       component.setAttribute('x1', x)
       component.setAttribute('y1', y)

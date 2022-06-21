@@ -59,6 +59,8 @@ class ANDGate extends ComponentContainer {
     this.appendChild(wire2)
     wire1.connect(wire2)
     wire2.connect(relay2.wire1)
+
+    this.exposedComponents = [this.inputWire1, this.inputWire2, this.outputWire]
   }
 
 }

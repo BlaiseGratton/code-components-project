@@ -38,7 +38,7 @@ const style = `
 
 class LoaderSidebar extends HTMLElement {
 
-  ALLOWED_ATTRIBUTES = ['x', 'y', 'x1', 'y1', 'x2', 'y2', 'width', 'height']
+  ALLOWED_ATTRIBUTES = ['x', 'y', 'x1', 'y1', 'x2', 'y2', 'width', 'height', 'scale']
 
   connectedCallback () {
     const template = document.createElement('template') 
@@ -65,6 +65,7 @@ class LoaderSidebar extends HTMLElement {
         </section>
         <section class="add-components">
           <h1>Add Components</h1>
+          <h2>Basic</h2>
           <ul class="add-components-buttons">
             <li class="add-button-container">
               <button id="wire-segment">Wire Segment</button>
@@ -92,6 +93,39 @@ class LoaderSidebar extends HTMLElement {
             </li>
             <li class="add-button-container">
               <button id="inverter-relay">Inverter Relay</button>
+            </li>
+          </ul>
+          <h2>Displays<h2>
+          <ul class="add-components-buttons">
+            <li class="add-button-container">
+              <button id="bulb-number-display">Bulb Numbers</button>
+            </li>
+          </ul>
+          <h2>Gates</h2>
+          <ul class="add-components-buttons">
+            <li class="add-button-container">
+              <button id="and-gate">AND Gate</button>
+            </li>
+            <li class="add-button-container">
+              <button id="or-gate">OR Gate</button>
+            </li>
+            <li class="add-button-container">
+              <button id="nand-gate">NAND Gate</button>
+            </li>
+            <li class="add-button-container">
+              <button id="nor-gate">NOR Gate</button>
+            </li>
+            <li class="add-button-container">
+              <button id="xor-gate">XOR Gate</button>
+            </li>
+          </ul>
+          <h2>Adders<h2>
+          <ul class="add-components-buttons">
+            <li class="add-button-container">
+              <button id="half-adder">Half Adder</button>
+            </li>
+            <li class="add-button-container">
+              <button id="full-adder">Full Adder</button>
             </li>
           </ul>
         </section>

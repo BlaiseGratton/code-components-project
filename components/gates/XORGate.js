@@ -65,6 +65,7 @@ class XORGate extends ComponentContainer {
     this.inputWire2 = this.parentElement.exposeWireCap(inputWire2.end1, 'left')
     this.outputWire = this.parentElement.exposeWireCap(outputWire.end2, 'right')
 
+    this.exposedComponents = [this.inputWire1, this.inputWire2, this.outputWire]
   }
   
 }

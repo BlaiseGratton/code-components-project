@@ -70,6 +70,8 @@ class NANDGate extends ComponentContainer {
     wire1.noDisconnect = true
     this.outputWire = this.parentElement.exposeWireCap(wire1.end2, 'right')
     this.outputWire.setAttribute('id', 'two')
+
+    this.exposedComponents = [this.inputWire1, this.inputWire2, this.outputWire]
   }
 
 }
